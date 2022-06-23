@@ -1,7 +1,7 @@
-**/.terraform/*
+.terraform/
 *.tfstate
 *.tfstate.*
-**/.terraform.lock.hcl
+.terraform.lock.hcl
 *_override.tf
 *_override.tf.json
 crash.log

@@ -22,17 +22,33 @@
       update_only: yes
     register: yum_update_status
 
-  - name: install nodejs
+  - name: install compiler
     yum:
-      name: ['nodejs']
-      skip_broken: yes
+      name:
+        - gcc-c++
+        - make
       state: present
 
+  - name: install node from repo
+    shell: 
+      - "curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash -"
+     
   - name: install nodejs
     yum:
-      name: ['npm']
-      skip_broken: yes
+      name: nodejs
       state: present
+
+#  - name: install nodejs
+#    yum:
+#      name: ['nodejs']
+#      skip_broken: yes
+#      state: present
+
+#  - name: install npm
+#    yum:
+#      name: ['npm']
+#      skip_broken: yes
+#      state: present
 
   - name: git-clone repo
     git:

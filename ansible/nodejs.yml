@@ -32,7 +32,7 @@
     git:
       repo: "{{ urlgit }}/{{ app }}"
       dest: "{{ path }}/{{ project }}/{{ app }}"
-      single_branch: yes
+      #single_branch: yes
       version: "{{ branch }}"
 
   - name: install nodejs packages on packages.json

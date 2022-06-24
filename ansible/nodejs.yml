@@ -70,13 +70,13 @@
   - name: git-clone repo
     git:
       repo: "{{ urlgit }}/{{ app }}"
-      dest: "{{ path }}/{{ project }}/{{ app }}"
+      dest: "/{{ path }}/{{ project }}/{{ app }}"
       #single_branch: yes
       version: "{{ branch }}"
 
   - name: install nodejs packages on packages.json
     npm:
-      path: "{{ path }}/{{ project }}/{{ app }}"
+      path: "/{{ path }}/{{ project }}/{{ app }}"
       state: present
     notify: restart nodejs
 

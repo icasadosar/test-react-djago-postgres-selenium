@@ -13,8 +13,8 @@ resource "aws_vpc" "test-spot" {
 
 resource "aws_subnet" "subnet-test-spot" {
   # creates a subnet
-  cidr_block        = "${cidrsubnet(aws_vpc.test-spot.cidr_block, 3, 1)}"
-  #cidr_block        = "10.0.1.0/24"
+  #cidr_block        = "${cidrsubnet(aws_vpc.test-spot.cidr_block, 3, 1)}"
+  cidr_block        = "10.0.1.0/24"
   vpc_id            = "${aws_vpc.test-spot.id}"
   availability_zone = "eu-west-1a"
 }
@@ -85,12 +85,6 @@ resource "aws_security_group" "ingress-https-test" {
   }
 }
 
-resource "aws_eip" "ip-test-env" {
-  instance   = "${aws_spot_instance_request.test_worker.spot_instance_id}"
-  vpc        = true
-  depends_on = [aws_spot_instance_request.test_worker]
-}
-
 resource "aws_internet_gateway" "test-env-gw" {
   vpc_id = "${aws_vpc.test-spot.id}"
 }
@@ -117,39 +111,49 @@ resource "aws_key_pair" "spot_key" {
 resource "aws_spot_instance_request" "test_worker" {
   ami                    = "ami-0d71ea30463e0ff8d"
   spot_price             = "0.016"
-  instance_type          = "t2.small"
+  instance_type          = "t3.small"
+  private_ip             = "10.0.1.10"
   spot_type              = "one-time"
   #block_duration_minutes = "120"
   wait_for_fulfillment   = "true"
   key_name               = "spot_key"
-  user_data              = "local.ec2_user_data" # no forces replacement
+  #user_data              = "local.ec2_user_data" # no forces replacement, only one in the file
   #user_data_replace_on_change = "false"
 
+/*
   lifecycle {
     ignore_changes = [user_data]
   }
+*/
 
   # no forces replacement
   vpc_security_group_ids = ["${aws_security_group.ingress-ssh-test.id}", "${aws_security_group.ingress-http-test.id}",
   "${aws_security_group.ingress-https-test.id}"]
   subnet_id = "${aws_subnet.subnet-test-spot.id}"
 
+/*
   connection {
     type          = "ssh"
     host          = self.public_ip
     user          = "ec2-user"
     private_key   = "${file("/home/ics/.ssh/id_rsa.pub")}"
   }
-
   provisioner "remote-exec" {
     inline = [
       "sudo amazon-linux-extras install ansible2 -y",
       "sudo yum install git -y",
       "git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks",
-      "ansible-playbook /tmp/ansible_playbooks/nginx.yml"
+      "ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml"
       ]
   }
-
+*/
+  user_data = <<-EOF
+        #!/bin/bash
+        sudo amazon-linux-extras install ansible2 -y,
+        sudo yum install git -y,
+        git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks,
+        ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml"
+  EOF
 /*
   user_data = <<-EOF
 	      #!/bin/bash
@@ -170,6 +174,13 @@ resource "aws_spot_instance_request" "test_worker" {
     Name = "ec2-test-nginx-terraform"
   }
 
+}
+
+resource "aws_eip" "ip-test-env" {
+  vpc                       = true
+  instance                  = "${aws_spot_instance_request.test_worker.spot_instance_id}"
+  associate_with_private_ip = "10.0.1.10"
+  depends_on                = [aws_internet_gateway.test-env-gw]
 }
 
 output "instance_ip_public" {

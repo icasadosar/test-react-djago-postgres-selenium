@@ -1,4 +1,4 @@
-- hosts: web
+- hosts: web-nginx
   become: yes
   tasks:
   - name: "yum update"

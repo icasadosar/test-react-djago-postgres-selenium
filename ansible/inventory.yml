@@ -1,6 +1,6 @@
 web:
   hosts:
-    localhost
+    web-nginx
   vars:
     domain: helloworld.com
     ansible_user: ec2-user

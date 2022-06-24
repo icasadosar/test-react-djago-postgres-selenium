@@ -1,10 +1,21 @@
 - hosts: localhost
   become: yes
   tasks:
-  - name: "yum update_only"
+  - name: "yum update"
     yum:
+      name: '*'
+      state: latest
       update_cache: yes
-      cache_valid_time: 3600
+      update_only: yes
+    register: yum_update_status
+
+#  - name: Remove packates not needed anymore
+#    yum:
+#      autoremove: yes
+
+#  - name: Reboot when packages were updated
+#    reboot:
+#    when: yum_update_status.changed
 
   - name: "install nginx"
     yum:

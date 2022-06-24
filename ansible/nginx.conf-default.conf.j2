@@ -9,7 +9,9 @@ events {
 }
 
 http {
-  #include     /etc/nginx/conf/mime.types;
+
+  include     mime.types;  
+  #include    /etc/nginx/conf/mime.types;
   #include    /etc/nginx/proxy.conf;
   #include    /etc/nginx/fastcgi.conf;
   index    index.html index.htm index.php;
@@ -21,8 +23,9 @@ http {
   access_log   /var/log/nginx/access-default-site.log  main;
   sendfile     on;
   tcp_nopush   on;
+  keepalive_timeout 65;
   server_names_hash_bucket_size 128; # this seems to be required for some vhosts
 
-  include   /etc/nginx/conf.d/*.conf
+  include   /etc/nginx/conf.d/*.conf;
 
-}
+#}

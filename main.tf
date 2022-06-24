@@ -86,8 +86,9 @@ resource "aws_security_group" "ingress-https-test" {
 }
 
 resource "aws_eip" "ip-test-env" {
-  instance = "${aws_spot_instance_request.test_worker.spot_instance_id}"
-  vpc      = true
+  instance   = "${aws_spot_instance_request.test_worker.spot_instance_id}"
+  vpc        = true
+  depends_on = [aws_spot_instance_request.test_worker]
 }
 
 resource "aws_internet_gateway" "test-env-gw" {
@@ -121,7 +122,7 @@ resource "aws_spot_instance_request" "test_worker" {
   #block_duration_minutes = "120"
   wait_for_fulfillment   = "true"
   key_name               = "spot_key"
-  #user_data              = "local.ec2_user_data" # no forces replacement
+  user_data              = "local.ec2_user_data" # no forces replacement
   #user_data_replace_on_change = "false"
 
   lifecycle {
@@ -135,7 +136,7 @@ resource "aws_spot_instance_request" "test_worker" {
 
   connection {
     type          = "ssh"
-    host          = ${self.public_ip}
+    host          = self.public_ip
     user          = "ec2-user"
     private_key   = "${file("/home/ics/.ssh/id_rsa.pub")}"
   }

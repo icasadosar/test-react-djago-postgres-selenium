@@ -78,6 +78,7 @@
     npm:
       path: "/{{ path }}/{{ project }}/{{ app }}"
       state: present
+    become: yes
     notify: restart nodejs
 
   - name: copy nginx site-{{ app }}

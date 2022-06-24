@@ -37,6 +37,14 @@
       name: nodejs
       state: present
 
+  - name: create log directory
+    file:
+      path: /var/log/nginx/{{ domain }}
+      state: directory
+      mode: '0775'
+      owner: nginx
+      group: nginx
+
 #  - name: install nodejs
 #    yum:
 #      name: ['nodejs']

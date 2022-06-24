@@ -38,22 +38,22 @@
 #    src: /etc/nginx/nginx.conf
 #    dest: /etc/nginx/nginx.conf_ORIGINAL
 
-- name: configure nginx
-  template: 
-      src: nginx.conf-default.conf.j2l
-      dest: /etc/nginx/nginx.conf
-      backup: yes
-  notify: restart nginx
-  tags: template-nginx-default-config
+  - name: configure nginx
+    template: 
+        src: nginx.conf-default.conf.j2l
+        dest: /etc/nginx/nginx.conf
+        backup: yes
+    notify: restart nginx
+    tags: template-nginx-default-config
 
-- name: copy nginx site.conf
-  template:
-      src: site-helloworld.com.conf.j2
-      dest: /etc/nginx/conf.d/{{ domain }}-http-80.conf
-      owner: root
-      group: root
-      mode: '0644'
-  notify: restart nginx
+  - name: copy nginx site.conf
+    template:
+        src: site-helloworld.com.conf.j2
+        dest: /etc/nginx/conf.d/{{ domain }}-http-80.conf
+        owner: root
+        group: root
+        mode: '0644'
+    notify: restart nginx
 
   handlers:
     - name: restart nginx

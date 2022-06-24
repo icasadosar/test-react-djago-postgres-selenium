@@ -111,7 +111,7 @@ resource "aws_key_pair" "spot_key" {
 resource "aws_spot_instance_request" "test_worker" {
   ami                    = "ami-0d71ea30463e0ff8d"
   spot_price             = "0.016"
-  instance_type          = "t3.small"
+  instance_type          = "t2.small"
   private_ip             = "10.0.1.10"
   spot_type              = "one-time"
   #block_duration_minutes = "120"
@@ -149,9 +149,9 @@ resource "aws_spot_instance_request" "test_worker" {
 */
   user_data = <<-EOF
         #!/bin/bash
-        sudo amazon-linux-extras install ansible2 -y,
-        sudo yum install git -y,
-        git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks,
+        sudo amazon-linux-extras install ansible2 -y
+        sudo yum install git
+        git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml"
   EOF
 /*

@@ -43,12 +43,17 @@
       state: directory
       mode: '0775'
 
-  - name: create log file
+  - name: create error-log file
     file:
       path: /var/log/nginx/{{ domain }}/error-{{ domain }}-http-80.log
-        #- /var/log/nginx/{{ domain }}/access-{{ domain }}-http-80.log
       state: touch
       mode: u=rw,g=r,o=r
+
+  - name: create access-log file
+    file:
+      path: /var/log/nginx/{{ domain }}/access-{{ domain }}-http-80.log
+      state: touch
+      mode: u=rw,g=r,o=r      
 
 #  - name: install nodejs
 #    yum:

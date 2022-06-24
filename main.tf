@@ -150,9 +150,9 @@ resource "aws_spot_instance_request" "test_worker" {
   user_data = <<-EOF
         #!/bin/bash
         sudo amazon-linux-extras install ansible2 -y
-        sudo yum install git
+        sudo yum install git -y
         git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks
-        ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml"
+        ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml
   EOF
 /*
   user_data = <<-EOF

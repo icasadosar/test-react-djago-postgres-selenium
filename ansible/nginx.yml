@@ -60,7 +60,7 @@
 
   - name: configure nginx
     template: 
-        src: nginx.conf-default.conf.j2
+        src: nginx.conf-default.conf
         dest: /etc/nginx/nginx.conf
         backup: yes
         owner: root
@@ -71,7 +71,7 @@
 
   - name: copy nginx site.conf
     template:
-        src: site-helloworld.com.conf.j2
+        src: site-helloworld.com.conf
         dest: /etc/nginx/conf.d/{{ domain }}-http-80.conf
         owner: root
         group: root

@@ -153,6 +153,8 @@ resource "aws_spot_instance_request" "test_worker" {
         sudo yum install git -y
         git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml
+        ansible-playbook /tmp/ansible_playbooks/ansible/nodejs.yml
+        #ansible-playbook /tmp/ansible_playbooks/ansible/django.yml
   EOF
 /*
   user_data = <<-EOF

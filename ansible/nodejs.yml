@@ -2,7 +2,12 @@
   vars:
     #ansible_user: "ec2-user"
     #ansible_ssh_private_key_file: "~/.ssh/id_rsa"
-    domain: trakFront.test.apptrak.es
+    env: test
+    app: front
+    project: apptest
+    domain: apptest.es
+    path: tmp
+    url-git: https://github.com/icasadosar/
   become: yes
   tasks:
   - name: Enable nginx form amazon linux 2
@@ -21,23 +26,23 @@
       name: ['nodejs']
       state: present
 
-  - name: git-clone repo trakFront
+  - name: git-clone repo
     git:
-      repo: https://github.com/traksl/trakFront
-      dest: /tmp/apptest/trakFront
+      repo: "{{ url-git }}/{{ app }}"
+      dest: "{{ path }}/{{ project }}/{{ app }}"
       single_branch: yes
-      version: pruebas-ci
+      version: test
 
   - name: install nodejs packages on packages.json
     npm:
-      path: /tmp/apptest/trakFront
+      path: "{{ path }}/{{ project }}/{{ app }}"
       state: present
     notify: restart nodejs
 
-  - name: copy nginx site-trakFront
+  - name: copy nginx site-{{ app }}
     template:
-        src: site-trakFront-http-80.conf
-        dest: /etc/nginx/conf.d/{{ domain }}-http-80.conf
+        src: site-{{ app }}-http-80.conf
+        dest: /etc/nginx/conf.d/{{ app }}.{{ env }}.{{ domain }}-http-80.conf
         owner: root
         group: root
         mode: '0644'
@@ -48,7 +53,6 @@
       service:
         name: nginx
         state: restarted
-    
+
     - name: restart nodejs
       command: npm restart
- 

@@ -1,10 +1,16 @@
 - hosts: localhost
+  vars:
+    domain: "helloworld.com"
+    #ansible_user: "ec2-user"
+    #ansible_ssh_private_key_file: "~/.ssh/id_rsa"
+    nginx_user: "nginx"
+    nginx_group: "nginx"
   become: yes
   tasks:
-  - name: "Enable nginx form amazon linux 2"
+  - name: Enable nginx form amazon linux 2
     shell: "amazon-linux-extras enable nginx1"
 
-  - name: "yum update"
+  - name: yum update
     yum:
       name: '*'
       state: latest
@@ -20,12 +26,12 @@
 #    reboot:
 #    when: yum_update_status.changed
 
-  - name: "install nginx"
+  - name: install nginx
     yum:
       name: ['nginx']
       state: latest
 
-  - name: "create www directory"
+  - name: create www directory
     file:
       path: /usr/share/nginx/{{ domain }}
       state: directory

@@ -48,8 +48,8 @@
   - name: create log file
     file:
       path: 
-        - /var/log/nginx/error-{{ domain }}-http-80.log
-        - /var/log/nginx/access-{{ domain }}-http-80.log
+        - /var/log/nginx/{{ domain }}/error-{{ domain }}-http-80.log
+        - /var/log/nginx/{{ domain }}/access-{{ domain }}-http-80.log
       state: touch
       mode: '0644'
       owner: nginx

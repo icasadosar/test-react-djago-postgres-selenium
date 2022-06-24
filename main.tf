@@ -133,6 +133,23 @@ resource "aws_spot_instance_request" "test_worker" {
   "${aws_security_group.ingress-https-test.id}"]
   subnet_id = "${aws_subnet.subnet-test-spot.id}"
 
+  connection {
+    type          = "ssh"
+    host          = ${self.public_ip}
+    user          = "ec2-user"
+    private_key   = "${file("/home/ics/.ssh/id_rsa.pub")}"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo amazon-linux-extras install ansible2 -y",
+      "sudo yum install git -y",
+      "git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks",
+      "ansible-playbook /tmp/ansible_playbooks/nginx.yml"
+      ]
+  }
+
+/*
   user_data = <<-EOF
 	      #!/bin/bash
         sudo amazon-linux-extras enable nginx1
@@ -147,9 +164,9 @@ resource "aws_spot_instance_request" "test_worker" {
         sudo chown nginx:nginx -R /usr/share/nginx/html/*
         sudo chmod 644 /usr/share/nginx/html/*
 		    EOF
-
+*/
   tags = {
-    Name = "ec2-test-ngnx-terraform"
+    Name = "ec2-test-nginx-terraform"
   }
 
 }

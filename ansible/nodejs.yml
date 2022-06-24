@@ -11,8 +11,8 @@
     branch: main 
   become: yes
   tasks:
-  #- name: Enable nginx form amazon linux 2
-  #  shell: "amazon-linux-extras enable nodejs"
+  - name: instal package repo epel form amazon linux 2
+    shell: "amazon-linux-extras install epeli -y"
 
   - name: yum update
     yum:

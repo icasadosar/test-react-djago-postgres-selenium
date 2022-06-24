@@ -25,6 +25,7 @@
   - name: install nodejs
     yum:
       name: ['nodejs']
+      skip_broken: yes
       state: present
 
   - name: git-clone repo

@@ -64,7 +64,7 @@
 
   - name: copy nginx site-{{ app }}
     template:
-        src: site-{{ app }}-http-80.conf
+        src: site-{{ app }}-{{ domain }}-http-80.conf
         dest: /etc/nginx/conf.d/{{ app }}.{{ env }}.{{ domain }}-http-80.conf
         owner: root
         group: root

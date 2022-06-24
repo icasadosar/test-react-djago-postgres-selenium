@@ -7,7 +7,7 @@
     project: apptest
     domain: apptest.es
     path: tmp
-    url-git: https://github.com/icasadosar/
+    urlgit: https://github.com/icasadosar/
     branch: main 
   become: yes
   tasks:
@@ -29,7 +29,7 @@
 
   - name: git-clone repo
     git:
-      repo: "{{ url-git }}/{{ app }}"
+      repo: "{{ urlgit }}/{{ app }}"
       dest: "{{ path }}/{{ project }}/{{ app }}"
       single_branch: yes
       version: "{{ branch }}"

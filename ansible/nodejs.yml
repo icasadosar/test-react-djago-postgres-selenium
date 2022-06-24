@@ -11,7 +11,7 @@
     branch: main 
   become: yes
   tasks:
-  - name: instal package repo epel form amazon linux 2
+  - name: install package repo epel form amazon linux 2
     shell: "amazon-linux-extras install epel -y"
 
   - name: yum update

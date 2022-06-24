@@ -8,6 +8,7 @@
     domain: apptest.es
     path: tmp
     url-git: https://github.com/icasadosar/
+    branch: main 
   become: yes
   tasks:
   - name: Enable nginx form amazon linux 2
@@ -31,7 +32,7 @@
       repo: "{{ url-git }}/{{ app }}"
       dest: "{{ path }}/{{ project }}/{{ app }}"
       single_branch: yes
-      version: test
+      version: "{{ branch }}"
 
   - name: install nodejs packages on packages.json
     npm:

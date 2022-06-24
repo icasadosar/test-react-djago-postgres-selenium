@@ -1,0 +1,54 @@
+- hosts: web
+  become: yes
+  tasks:
+  - name: "yum update"
+    yum:
+      update_cache: yes
+      cache_valid_time: 3600
+
+  - name: "install nginx"
+    yum:
+      name: ['nginx']
+      state: latest
+
+  - name: "create www directory"
+    file:
+      path: /usr/share/nginx/{{ domain }}
+      state: directory
+      mode: '0775'
+      owner: "{{ nginx_user }}"
+      group: "{{ nginx_group }}"
+
+# - name: delete default nginx site
+#    file:
+#      path: /etc/nginx/sites-enabled/default
+#      state: absent
+#    notify: restart nginx
+
+#- name: Copy default config nginx
+#  ansible.builtin.copy:
+#    src: /etc/nginx/nginx.conf
+#    dest: /etc/nginx/nginx.conf_ORIGINAL
+
+- name: configure nginx
+  template: 
+      src: nginx.conf-default.conf.j2
+      dest: /etc/nginx/nginx.conf
+      backup: yes
+  notify: restart nginx
+  tags: template-nginx-default-config
+
+- name: copy nginx site.conf
+  template:
+      src: site-helloworld.com.conf.j2
+      dest: /etc/nginx/conf.d/{{ domain }}-http-80.conf
+      owner: root
+      group: root
+      mode: '0644'
+  notify: restart nginx
+
+  handlers:
+    - name: restart nginx
+      service:
+        name: nginx
+        state: restarted

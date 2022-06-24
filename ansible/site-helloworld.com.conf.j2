@@ -1,0 +1,9 @@
+server {
+  listen 80;
+  listen [::]:80;
+  server_name {{ domain }};
+  root /usr/share/nginx/{{ domain }};
+  location / {
+    try_files $uri $uri/ =404;
+  }
+}

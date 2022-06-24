@@ -25,7 +25,7 @@ resource "aws_security_group" "ingress-ssh-test" {
 
   ingress {
     cidr_blocks = [
-      "79.116.135.184/32"
+      "83.58.219.210/32"
     ]
 
     from_port = 22
@@ -143,7 +143,7 @@ resource "aws_spot_instance_request" "test_worker" {
         sudo mkdir /usr/share/nginx/html/
         sudo chown nginx:nginx /usr/share/nginx/html/
         sudo chmod 755 /usr/share/nginx/html/
-		    echo "Hello world from EC2 $(hostname -f) primera prueba terraform" > /usr/share/nginx/html/index.html
+	      echo "Hello world from EC2 $(hostname -f) primera prueba terraform" > /usr/share/nginx/html/index.html
         sudo chown nginx:nginx -R /usr/share/nginx/html/*
         sudo chmod 644 /usr/share/nginx/html/*
 		    EOF
@@ -159,5 +159,5 @@ output "instance_ip_public" {
 }
 
 output "endpoint_https" {
-  value = "https://${aws_spot_instance_request.test_worker.public_ip}/index.html"
+  value = "http://${aws_spot_instance_request.test_worker.public_ip}/index.html"
 }

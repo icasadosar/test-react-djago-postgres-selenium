@@ -105,11 +105,11 @@
         mode: 0755
 
   - name: Run startup script
-    shell: /opt/trak/doStartupDjango.sh > /tmp/doStartupNodejs.log 2> /tmp/doStartupNodejs.err.log &
+    shell: /opt/trak/doStartupDjango.sh > /tmp/doStartupNodejs.log 2> /tmp/doStartupNodejs.err.log & # sleep 1
     args:
       chdir: /{{ path }}/{{ project }}/{{ app }}
-    async: 45
-    poll: 0 
+    #async: 45
+    #poll: 0 
 
   handlers:
     - name: restart nginx

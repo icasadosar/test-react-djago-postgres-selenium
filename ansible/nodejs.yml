@@ -89,6 +89,14 @@
         mode: '0644'
     notify: restart nginx
 
+  - name: copy script nodejs
+    template:
+        src: doNodejs.sh
+        dest: /{{ path }}/{{ project }}/{{ app }}/doNodejs.sh
+        owner: root
+        group: root
+        mode: '755'
+
   handlers:
     - name: restart nginx
       service:
@@ -97,12 +105,12 @@
 
     - name: start nodejs
       #command: cd /{{ path }}/{{ project }}/{{ app }} && nohup npm restart --prefix /{{ path }}/{{ project }}/{{ app }} > stdout.txt 2> stderr.txt &
-      shell: npm start &
+      shell: /bin/bash doNodejs.sh start
       args:
         chdir: /{{ path }}/{{ project }}/{{ app }}
 
     - name: restart nodejs
       #command: cd /{{ path }}/{{ project }}/{{ app }} && nohup npm restart --prefix /{{ path }}/{{ project }}/{{ app }} > stdout.txt 2> stderr.txt &
-      shell: npm restart &
+      shell: /bin/bash doNodejs.sh restart
       args:
         chdir: /{{ path }}/{{ project }}/{{ app }}

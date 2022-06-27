@@ -100,8 +100,10 @@
         state: restarted
 
     - name: restart nodejs
-      command: cd /{{ path }}/{{ project }}/{{ app }} && nohup npm restart --prefix /{{ path }}/{{ project }}/{{ app }} > stdout.txt 2> stderr.txt &
+      #command: cd /{{ path }}/{{ project }}/{{ app }} && nohup npm restart --prefix /{{ path }}/{{ project }}/{{ app }} > stdout.txt 2> stderr.txt &
+      command: cd /{{ path }}/{{ project }}/{{ app }} && npm restart &
       #command: /usr/bin/forever start /{{ path }}/{{ project }}/{{ app }}/src/sw-build.js
+      # /tmp/apptest/front/node_modules/react-scripts/scripts/start.js
       #shell: /bin/bash doNodejs.sh start &
       #args:
       #  chdir: /{{ path }}/{{ project }}/{{ app }}

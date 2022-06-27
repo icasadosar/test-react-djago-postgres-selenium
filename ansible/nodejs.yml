@@ -90,6 +90,7 @@
     notify: restart nginx
 
   - name: start nginx always
+    command: echo "this task will restart Nodejs"
     notify: restart nodejs
 
   handlers:

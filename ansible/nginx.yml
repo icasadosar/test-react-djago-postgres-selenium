@@ -31,13 +31,42 @@
       name: ['nginx']
       state: latest
 
-  - name: create www directory
+  - name: create directory log site-default
+    file:
+       path: /var/log/nginx/site-default
+       state: directory
+       mode: '0775'
+       owner: "{{ nginx_user }}"
+       group: "{{ nginx_group }}"
+
+  - name: configure nginx
+    template: 
+        src: nginx.conf-default.conf
+        dest: /etc/nginx/nginx.conf
+        backup: yes
+        owner: root
+        group: root
+        mode: '0644'
+    tags: template-nginx-default-config
+
+  - name: create www directory site default
     file:
       path: /usr/share/nginx/site-default
       state: directory
       mode: '0775'
       owner: "{{ nginx_user }}"
       group: "{{ nginx_group }}"
+
+  - name: configure nginx site default
+    template: 
+        src: site-default.conf
+        dest: /etc/nginx/conf.d/default.conf
+        backup: yes
+        owner: "{{ nginx_user }}"
+        group: "{{ nginx_user }}"
+        mode: '0644'
+    notify: restart nginx
+    tags: template-nginx-default-config  
 
   - name: Copy default config nginx
     template:
@@ -57,25 +86,6 @@
 #  ansible.builtin.copy:
 #    src: /etc/nginx/nginx.conf
 #    dest: /etc/nginx/nginx.conf_ORIGINAL
-
-  - name: configure nginx
-    template: 
-        src: nginx.conf-default.conf
-        dest: /etc/nginx/nginx.conf
-        backup: yes
-        owner: root
-        group: root
-        mode: '0644'
-    notify: restart nginx
-    tags: template-nginx-default-config
-
-  - name: create directory log site-default
-    file:
-       path: /var/log/nginx/site-default
-       state: directory
-       mode: '0775'
-       owner: "{{ nginx_user }}"
-       group: "{{ nginx_group }}"
 
 #  - name: copy nginx site.conf
 #    template:

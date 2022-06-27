@@ -89,6 +89,8 @@
         mode: '0644'
     notify: restart nginx
 
+  - debug:
+
   handlers:
     - name: restart nginx
       service:
@@ -97,7 +99,12 @@
 
     - name: restart nodejs
       #command: cd /{{ path }}/{{ project }}/{{ app }} && nohup npm restart --prefix /{{ path }}/{{ project }}/{{ app }} > stdout.txt 2> stderr.txt &
-      command: forever start /{{ path }}/{{ project }}/{{ app }}/src/sw-build.js
+      command: /usr/bin/forever start /{{ path }}/{{ project }}/{{ app }}/src/sw-build.js
+      register: result
+
+    - debug:
+        var: result
+        verbosity: 2
       #shell: /bin/bash doNodejs.sh start &
       #args:
       #  chdir: /{{ path }}/{{ project }}/{{ app }}

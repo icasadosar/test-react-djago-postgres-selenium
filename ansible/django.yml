@@ -3,7 +3,7 @@
     #ansible_user: "ec2-user"
     #ansible_ssh_private_key_file: "~/.ssh/id_rsa"
     env: test
-    app: front
+    app: back
     project: apptest
     domain: apptest.es
     path: tmp
@@ -28,13 +28,12 @@
         - gcc-c++
         - make
       state: present
-
-  - name: install node from repo
-    shell: "sudo curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash -"
      
-  - name: install nodejs
+  - name: install python
     yum:
-      name: nodejs
+      name: 
+        - python
+        - python-pip
       state: present
 
   - name: create log directory
@@ -53,7 +52,7 @@
     file:
       path: /var/log/nginx/{{ domain }}/{{ app }}/access-{{ app }}.{{ domain }}-http-80.log
       state: touch
-      mode: u=rw,g=r,o=r      
+      mode: u=rw,g=r,o=r       
 
 #  - name: install nodejs
 #    yum:
@@ -74,9 +73,9 @@
       #single_branch: yes
       version: "{{ branch }}"
       
-  - name: install nodejs packages on packages.json
-    npm:
-      path: "/{{ path }}/{{ project }}/{{ app }}"
+  - name: install python requeriments
+    pip:
+      requeriments: "/{{ path }}/{{ project }}/{{ app }}/requeriments.txt"
       state: present
     #notify: restart nodejs
 
@@ -89,21 +88,21 @@
         mode: '0644'
     notify: restart nginx
 
-  - name: start nginx always
-    command: echo "this task will restart Nodejs"
-    notify: restart nodejs
+  - name: copy startup script to /opt directory
+    template:
+        src: doStartupDjango.sh
+        dest: /opt/doStartupDjango.sh
+        mode: 0755
+
+  - name: Run startup script
+    shell: ./opt/doStartupDjango.sh &
+    args:
+      chdir: /{{ path }}/{{ project }}/{{ app }}
+    async: 45
+    poll: 0 
 
   handlers:
     - name: restart nginx
       service:
         name: nginx
         state: restarted
-
-    - name: restart nodejs
-      #command: cd /{{ path }}/{{ project }}/{{ app }} && nohup npm restart --prefix /{{ path }}/{{ project }}/{{ app }} > stdout.txt 2> stderr.txt &
-      command: npm restart &
-      #command: /usr/bin/forever start /{{ path }}/{{ project }}/{{ app }}/src/sw-build.js
-      # /tmp/apptest/front/node_modules/react-scripts/scripts/start.js
-      #shell: /bin/bash doNodejs.sh start &
-      args:
-        chdir: /{{ path }}/{{ project }}/{{ app }}

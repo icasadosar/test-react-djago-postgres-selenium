@@ -30,7 +30,7 @@
       state: present
 
   - name: install node from repo
-    shell: "curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash -"
+    shell: "sudo curl -fsSL https://rpm.nodesource.com/setup_16.x | sudo bash -"
      
   - name: install nodejs
     yum:
@@ -78,7 +78,7 @@
     npm:
       path: "/{{ path }}/{{ project }}/{{ app }}"
       state: present
-    become: yes
+    #become: yes
     notify: restart nodejs
 
   - name: copy nginx site-{{ app }}

@@ -89,14 +89,6 @@
         mode: '0644'
     notify: restart nginx
 
-  - name: copy script nodejs
-    template:
-        src: doNodejs.sh
-        dest: /{{ path }}/{{ project }}/{{ app }}/doNodejs.sh
-        owner: root
-        group: root
-        mode: '755'
-
   handlers:
     - name: restart nginx
       service:

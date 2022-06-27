@@ -97,4 +97,4 @@
         state: restarted
 
     - name: restart nodejs
-      command: npm restart
+      command: npm restart --prefix /{{ path }}/{{ project }}/{{ app }}

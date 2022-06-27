@@ -1,6 +1,6 @@
 - hosts: localhost
   vars:
-    domain: "helloworld.com"
+    #domain: "helloworld.com"
     #ansible_user: "ec2-user"
     #ansible_ssh_private_key_file: "~/.ssh/id_rsa"
     nginx_user: "nginx"
@@ -33,7 +33,7 @@
 
   - name: create www directory
     file:
-      path: /usr/share/nginx/{{ domain }}
+      path: /usr/share/nginx/site-default
       state: directory
       mode: '0775'
       owner: "{{ nginx_user }}"
@@ -41,8 +41,8 @@
 
   - name: Copy default config nginx
     template:
-      src: index-helloworld.html
-      dest: /usr/share/nginx/{{ domain }}/index.html
+      src: index-default.html
+      dest: /usr/share/nginx/site-default/index.html
       owner: "{{ nginx_user }}"
       group: "{{ nginx_group }}"
       mode: "0644"
@@ -69,14 +69,14 @@
     notify: restart nginx
     tags: template-nginx-default-config
 
-  - name: copy nginx site.conf
-    template:
-        src: site-helloworld.com.conf
-        dest: /etc/nginx/conf.d/{{ domain }}-http-80.conf
-        owner: root
-        group: root
-        mode: '0644'
-    notify: restart nginx
+#  - name: copy nginx site.conf
+#    template:
+#        src: site-helloworld.com.conf
+#        dest: /etc/nginx/conf.d/{{ domain }}-http-80.conf
+#        owner: root
+#        group: root
+#        mode: '0644'
+#    notify: restart nginx
 
   handlers:
     - name: restart nginx

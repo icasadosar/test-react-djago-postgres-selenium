@@ -90,6 +90,14 @@
         mode: '0644'
     notify: restart nginx
 
+  - name: create directory /op/trak
+    file:
+       path: /opt/trak
+       state: directory
+       mode: '0775'
+       owner: root
+       group: root
+
   - name: copy startup script to /opt directory
     template:
         src: doStartupNodejs.sh

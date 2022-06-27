@@ -5,7 +5,7 @@
     #ansible_ssh_private_key_file: "~/.ssh/id_rsa"
     nginx_user: "nginx"
     nginx_group: "nginx"
-  become: yes
+  #become: yes
   tasks:
   - name: Enable nginx form amazon linux 2
     shell: "amazon-linux-extras enable nginx1"

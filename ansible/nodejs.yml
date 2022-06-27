@@ -78,7 +78,7 @@
     npm:
       path: "/{{ path }}/{{ project }}/{{ app }}"
       state: present
-    notify: restart nodejs
+    #notify: restart nodejs
 
   - name: copy nginx site-{{ app }}
     template:
@@ -89,7 +89,8 @@
         mode: '0644'
     notify: restart nginx
 
-  - debug:
+  - name: start nginx always
+    notify: restart nodejs
 
   handlers:
     - name: restart nginx
@@ -99,12 +100,7 @@
 
     - name: restart nodejs
       #command: cd /{{ path }}/{{ project }}/{{ app }} && nohup npm restart --prefix /{{ path }}/{{ project }}/{{ app }} > stdout.txt 2> stderr.txt &
-      command: /usr/bin/forever start /{{ path }}/{{ project }}/{{ app }}/src/sw-build.js
-      register: result
-
-    - debug:
-        var: result
-        verbosity: 2
+      command: /usr/bin/forever start /{{ path }}aaaaa/{{ project }}/{{ app }}/src/sw-build.js
       #shell: /bin/bash doNodejs.sh start &
       #args:
       #  chdir: /{{ path }}/{{ project }}/{{ app }}

@@ -97,4 +97,4 @@
         state: restarted
 
     - name: restart nodejs
-      command: npm restart --prefix /{{ path }}/{{ project }}/{{ app }}
+      command: nohup npm restart --prefix /{{ path }}/{{ project }}/{{ app }} > stdout.txt 2> stderr.txt &

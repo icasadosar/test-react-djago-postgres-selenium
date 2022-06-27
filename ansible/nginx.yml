@@ -69,6 +69,14 @@
     notify: restart nginx
     tags: template-nginx-default-config
 
+  - name: create directory log site-default
+    file:
+       path: /var/log/nginx/site-default
+       state: directory
+       mode: '0775'
+       owner: "{{ nginx_user }}"
+       group: "{{ nginx_group }}"
+
 #  - name: copy nginx site.conf
 #    template:
 #        src: site-helloworld.com.conf

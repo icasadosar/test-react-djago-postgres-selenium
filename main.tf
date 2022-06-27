@@ -5,8 +5,11 @@ provider "aws" {
   region = "eu-west-1"
 }
 
+variable "cidr" { default = "10.0.0.0/16" }
+variable "subnet" { default = "10.0.1.0/24"}
+
 resource "aws_vpc" "test-spot" {
-  cidr_block           = "10.0.0.0/16"
+  cidr_block           = "${var.cidr}"
   enable_dns_hostnames = true
   enable_dns_support   = true
 }
@@ -14,7 +17,7 @@ resource "aws_vpc" "test-spot" {
 resource "aws_subnet" "subnet-test-spot" {
   # creates a subnet
   #cidr_block        = "${cidrsubnet(aws_vpc.test-spot.cidr_block, 3, 1)}"
-  cidr_block        = "10.0.1.0/24"
+  cidr_block        = "${var.subnet}"
   vpc_id            = "${aws_vpc.test-spot.id}"
   availability_zone = "eu-west-1a"
 }
@@ -111,15 +114,15 @@ resource "aws_key_pair" "spot_key" {
 resource "aws_eip" "ip-test-env" {
   vpc                       = true
   instance                  = "${aws_spot_instance_request.test_worker.spot_instance_id}"
-  associate_with_private_ip = "${aws_vpc.test-spot.cidr_block, 5)}"
-  depends_on                = [aws_spot_instance_request.test_worker.spot_instance_id]
+  associate_with_private_ip = "${cidrhost(var.subnet, 5)}"
+  depends_on                = [aws_spot_instance_request.test_worker]
 }
 
 resource "aws_spot_instance_request" "test_worker" {
   ami                    = "ami-0d71ea30463e0ff8d"
   spot_price             = "0.016"
   instance_type          = "t2.small"
-  private_ip             = "${cidrhost(aws_vpc.test-spot.cidr_block, 5)}"
+  private_ip             = "${cidrhost(var.subnet, 5)}"
   spot_type              = "one-time"
   #block_duration_minutes = "120"
   wait_for_fulfillment   = "true"

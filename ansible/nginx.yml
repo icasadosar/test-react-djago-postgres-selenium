@@ -60,7 +60,7 @@
   - name: configure nginx site default
     template: 
         src: site-default.conf
-        dest: /etc/nginx/conf.d/default.conf
+        dest: /etc/nginx/conf.d/000-default.conf
         backup: yes
         owner: "{{ nginx_user }}"
         group: "{{ nginx_user }}"

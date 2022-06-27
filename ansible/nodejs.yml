@@ -97,6 +97,6 @@
 
     - name: restart nodejs
       #command: cd /{{ path }}/{{ project }}/{{ app }} && nohup npm restart --prefix /{{ path }}/{{ project }}/{{ app }} > stdout.txt 2> stderr.txt &
-      shell: nohup npm restart &
+      shell: forever restart
       args:
         chdir: /{{ path }}/{{ project }}/{{ app }}

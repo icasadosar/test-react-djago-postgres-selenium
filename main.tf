@@ -110,15 +110,31 @@ resource "aws_key_pair" "spot_key" {
   key_name   = "spot_key"
   public_key = "${file("/home/ics/.ssh/id_rsa.pub")}"
 }
+/*
+resource "aws_network_interface" "eth-test" {
+  subnet_id = "${aws_subnet.subnet.0.id}"
+  description = "eth-test0${count.index}"
+
+  security_groups = ["${aws_security_group.ingress-ssh-test.id}", "${aws_security_group.ingress-http-test.id}",
+  "${aws_security_group.ingress-https-test.id}"]
+}
+*/
+
 
 resource "aws_eip" "ip-test-env" {
   vpc                       = true
   instance                  = "${aws_spot_instance_request.test_worker.spot_instance_id}"
-  associate_with_private_ip = "${cidrhost(var.subnet, 5)}"
-  depends_on                = [aws_spot_instance_request.test_worker]
+  #associate_with_private_ip = "${cidrhost(var.subnet, 5)}"
+  network_interface = "${element(aws_network_interface.eth-text.*.id, count.index)}"
+
+  depends_on = ["aws_internet_gateway.test-env-gw"]
+  depends_on = ["aws_spot_instance_request.test_worker"]
 }
 
+
 resource "aws_spot_instance_request" "test_worker" {
+  #count = "${var.something_count}"
+
   ami                    = "ami-0d71ea30463e0ff8d"
   spot_price             = "0.016"
   instance_type          = "t2.small"
@@ -140,7 +156,12 @@ resource "aws_spot_instance_request" "test_worker" {
   vpc_security_group_ids = ["${aws_security_group.ingress-ssh-test.id}", "${aws_security_group.ingress-http-test.id}",
   "${aws_security_group.ingress-https-test.id}"]
   subnet_id = "${aws_subnet.subnet-test-spot.id}"
-
+/*
+  network_interface {
+    network_interface_id = "${element(aws_network_interface.eth-test.*.id, count.index)}"
+    device_index = 0
+  }
+*/
 /*
   connection {
     type          = "ssh"
@@ -164,7 +185,7 @@ resource "aws_spot_instance_request" "test_worker" {
         git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nodejs.yml
-        #ansible-playbook /tmp/ansible_playbooks/ansible/django.yml
+        ansible-playbook /tmp/ansible_playbooks/ansible/django.yml
   EOF
 /*
   user_data = <<-EOF

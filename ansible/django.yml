@@ -151,4 +151,4 @@
     - name: restart supervisord
       service: 
         name: supervisord
-        state: restart
+        state: restarted

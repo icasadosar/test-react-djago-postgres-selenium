@@ -95,6 +95,11 @@
         mode: '0644'
     notify: restart nginx
 
+  - name: install supervisord
+    yum:
+      name: supervisor
+      state: present
+
   - name: copy supervisord supervisord-gunicorn.ini
     template:
         src: supervisord-gunicorn.ini

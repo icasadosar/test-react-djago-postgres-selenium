@@ -96,6 +96,11 @@
         mode: '0644'
     notify: restart nginx
 
+  - name: install supervisord
+    yum:
+      name: supervisor
+      state: present
+
   - name: copy supervisord supervisord-npm.ini
     template:
         src: supervisord-npm.ini
@@ -127,7 +132,7 @@
         dest: /opt/trak/doStartupNodejs.sh
         mode: 0755
 
-  - name: Run startup script
+  - name: run startup script
     shell: /opt/trak/doStartupNodejs.sh > {{ pathlog }}/doStartupNodejs.log 2> {{ pathlog }}/doStartupNodejs.err.log & sleep 1
     args:
       chdir: /{{ path }}/{{ project }}/{{ app }}

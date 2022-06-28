@@ -12,6 +12,7 @@
     urlgit: https://github.com/icasadosar/
     branch: main
     pathlog: /var/log/trak
+    KEY_PATH: ~/.ssh/ssh-key-github
   become: yes
   tasks:
   - name: debug start playbook
@@ -72,6 +73,24 @@
 #      name: ['npm']
 #      skip_broken: yes
 #      state: present
+
+  - name: Add SSH key to SSH agent
+    shell: |
+      eval $(ssh-agent -s)
+      ssh-add {{ KEY_PATH }}
+
+#  - name: Switch branch 
+#    shell: "{{ GIT_EXECUTABLE }} checkout {{ GIT_BRANCH }}"
+#    args:
+#      chdir: "{{ CLONE_DEST }}"
+
+#  - name: Clone the repository
+#    shell: GIT_SSH_COMMAND="ssh -i {{ KEY_PATH }} -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" {{ GIT_EXECUTABLE }} clone {{ GIT_REPO }} {{ CLONE_DEST }}
+  
+#  - name: Switch branch 
+#    shell: "{{ GIT_EXECUTABLE }} checkout {{ GIT_BRANCH }}"
+#    args:
+#      chdir: "{{ CLONE_DEST }}"
 
   - name: git-clone repo
     git:
@@ -141,6 +160,10 @@
   - name: debug end playbook
     debug:
       msg: "end: ansible-playbook django.yml"
+
+  always:
+  - name: Kill the ssh-agent
+    shell: export pid=`ps -A | grep ssh-agent | awk 'NR==1{print $1}' | cut -d' ' -f1`; kill $pid
 
   handlers:
     - name: restart nginx

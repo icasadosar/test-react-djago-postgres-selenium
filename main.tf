@@ -140,6 +140,16 @@ resource "aws_network_interface" "eth-test" {
 }
 */
 
+data "aws_secretsmanager_secret_version" "ssh-key-github" {
+  secret_id = "ssh-key-github"
+}
+
+locals {
+  ssh-key-github = jsondecode(
+    data.aws_secretsmanager_secret_version.ssh-key-github.secret_string
+  )
+}
+
 resource "aws_spot_instance_request" "test_worker" {
   #count = "${var.something_count}"
 
@@ -160,6 +170,11 @@ resource "aws_spot_instance_request" "test_worker" {
     ignore_changes = [user_data]
   }
 */
+
+  provisioner "file" {
+    source = "${local.ssh-key-github.ssh-key-github}"
+    destination = "~/.ssh/ssh-key-github"
+  }
 
   # no forces replacement
   vpc_security_group_ids = [aws_security_group.ingress-ssh-test.id, aws_security_group.ingress-http-test.id,
@@ -199,6 +214,7 @@ resource "aws_spot_instance_request" "test_worker" {
         ansible-playbook /tmp/ansible_playbooks/ansible/django.yml
         echo "** end: terraform `date +%c` **" >> /var/log/trak/terraform.log 2>&1
   EOF
+
 /*
   user_data = <<-EOF
 	      #!/bin/bash
@@ -217,7 +233,7 @@ resource "aws_spot_instance_request" "test_worker" {
 */
 
   tags = {
-    Name = "ec2-test-nginx-terraform"
+    Name = "ec2-trak-test-ci-terraform"
   }
 
   depends_on = [aws_vpc.test-spot, aws_key_pair.spot_key, aws_security_group.ingress-ssh-test, aws_security_group.ingress-http-test,

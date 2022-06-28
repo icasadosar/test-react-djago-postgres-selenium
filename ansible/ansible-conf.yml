@@ -1,0 +1,14 @@
+- hosts: localhost
+  vars:
+    #var-name: value
+  become: yes
+  tasks:
+  - name: configure ansible
+    template:
+        src: ansible-conf.cfg
+        dest: /etc/ansible/ansible.cfg
+        backup: yes
+        owner: root
+        group: root
+        mode: '0644'
+    tags: template-nginx-default-config

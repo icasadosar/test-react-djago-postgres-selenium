@@ -140,15 +140,21 @@ resource "aws_network_interface" "eth-test" {
 }
 */
 
-data "aws_secretsmanager_secret_version" "ssh-key-github" {
-  secret_id = "ssh-key-github"
+/*
+data "aws_secretsmanager_secret_version" "creds-key-github" {
+  secret_id     = "ssh-key-github"
+  #sensitive     = "true" 
+  #secret_string = aws_secretsmanager_secret_version.key-github.secret_string
 }
+*/
 
+/*
 locals {
-  ssh-key-github = jsondecode(
-    data.aws_secretsmanager_secret_version.ssh-key-github.secret_string
+  key-github = jsondecode(
+    data.aws_secretsmanager_secret_version.creds-key-github.secret_string
   )
 }
+*/
 
 resource "aws_spot_instance_request" "test_worker" {
   #count = "${var.something_count}"
@@ -170,11 +176,6 @@ resource "aws_spot_instance_request" "test_worker" {
     ignore_changes = [user_data]
   }
 */
-
-  provisioner "file" {
-    source = "${local.ssh-key-github.ssh-key-github}"
-    destination = "~/.ssh/ssh-key-github"
-  }
 
   # no forces replacement
   vpc_security_group_ids = [aws_security_group.ingress-ssh-test.id, aws_security_group.ingress-http-test.id,
@@ -203,6 +204,7 @@ resource "aws_spot_instance_request" "test_worker" {
 */
   user_data = <<-EOF
         #!/bin/bash
+        sudo chmod 600 /home/ec2-user/.ssh/ssh-key-github
         mkdir /var/log/trak/
         chmod 755 /var/log/trak/
         echo "** start: terraform `date +%c` **" >> /var/log/trak/terraform.log
@@ -244,12 +246,57 @@ resource "aws_spot_instance_request" "test_worker" {
 resource "aws_eip_association" "ip-test-env" {
   instance_id   = aws_spot_instance_request.test_worker.spot_instance_id
   allocation_id = aws_eip.ip-test-env.id
+
+  provisioner "file" {
+    #content       = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.creds-key-github.secret_string))
+    source        = "/home/ics/.ssh/id-key-github"                    
+    destination   = "/home/ec2-user/.ssh/ssh-key-github"
+
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = "${file("/home/ics/.ssh/id_rsa")}"
+      host        = aws_eip.ip-test-env.public_ip
+      timeout     = "30s"
+    }
+  }
+
 }
 
+/*
+resource "ssh_resource" "init" {
+  # The default behaviour is to run file blocks and commands at create time
+  # You can also specify 'destroy' to run the commands at destroy time
+  when = "create"
+
+  host         = aws_eip.ip-test-env.public_ip
+  #bastion_host = "bastion.host.com"
+  user         = ec2-user
+  #host_user    = var.host_user
+  #agent        = true
+  # An ssh-agent with your SSH private keys should be running
+  # Use 'private_key' to set the SSH key otherwise
+
+  file {
+    #content       = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.creds-key-github.secret_string))
+    source        = "/home/ics/.ssh/id-key-github"                    
+    destination   = "/home/ec2-user/.ssh/ssh-key-github"
+    permissions   = "0600"
+  }
+
+  timeout = "30s"
+}
+*/
+
 output "instance_ip_public" {
-  value = "ssh -i ~/.ssh/id_rsa ec2-user@${aws_spot_instance_request.test_worker.public_ip}"
+  value = "ssh -i ~/.ssh/id_rsa ec2-user@${aws_eip.ip-test-env.public_ip}"
 }
 
 output "endpoint_https" {
-  value = "http://${aws_spot_instance_request.test_worker.public_ip}/index.html"
+  value = "http://${aws_eip.ip-test-env.public_ip}/index.html"
 }
+
+#output "example" {
+  #value = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.key-github.secret_string))
+  #sensitive = false
+#}

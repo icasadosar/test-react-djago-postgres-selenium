@@ -98,7 +98,7 @@
   - name: copy supervisord supervisord-gunicorn.ini
     template:
         src: supervisord-gunicorn.ini
-        dest: /etc/supervisord.d/gunicorn.in
+        dest: /etc/supervisor.d/gunicorn.in
         owner: root
         group: root
         mode: '0644'

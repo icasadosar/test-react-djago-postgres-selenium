@@ -99,7 +99,7 @@
   - name: copy supervisord supervisord-npm.ini
     template:
         src: supervisord-npm.ini
-        dest: /etc/supervisord.d/npm.in
+        dest: /etc/supervisor.d/npm.in
         owner: root
         group: root
         mode: '0644'

@@ -3,6 +3,14 @@
 
 provider "aws" {
   region = "eu-west-1"
+
+  default_tags {
+    tags = {
+      environment = "test"
+      owner       = "devops"
+      com         = "trak"
+      project     = "apptest"
+    }
 }
 
 variable "cidr" { default = "10.0.0.0/16" }
@@ -14,12 +22,27 @@ resource "aws_vpc" "test-spot" {
   enable_dns_support   = true
 }
 
+resource "aws_internet_gateway" "test-env-gw" {
+  vpc_id = "${aws_vpc.test-spot.id}"
+}
+
 resource "aws_subnet" "subnet-test-spot" {
   # creates a subnet
   #cidr_block        = "${cidrsubnet(aws_vpc.test-spot.cidr_block, 3, 1)}"
   cidr_block        = "${var.subnet}"
   vpc_id            = "${aws_vpc.test-spot.id}"
   availability_zone = "eu-west-1a"
+
+  depends_on = [aws_internet_gateway.test-env-gw]
+}
+
+resource "aws_eip" "ip-test-env" {
+  vpc                       = true
+  #instance                  = aws_spot_instance_request.test_worker.spot_instance_id
+  #associate_with_private_ip = "${cidrhost(var.subnet, 5)}"
+  #network_interface = "${element(aws_network_interface.eth-text.*.id, count.index)}"
+
+  depends_on = [aws_internet_gateway.test-env-gw]
 }
 
 resource "aws_security_group" "ingress-ssh-test" {
@@ -28,7 +51,8 @@ resource "aws_security_group" "ingress-ssh-test" {
 
   ingress {
     cidr_blocks = [
-      "83.58.219.210/32"
+      "83.58.219.210/32",
+      "88.28.10.247/32"
     ]
 
     from_port = 22
@@ -88,10 +112,6 @@ resource "aws_security_group" "ingress-https-test" {
   }
 }
 
-resource "aws_internet_gateway" "test-env-gw" {
-  vpc_id = "${aws_vpc.test-spot.id}"
-}
-
 resource "aws_route_table" "route-table-test-env" {
   vpc_id = "${aws_vpc.test-spot.id}"
 
@@ -120,29 +140,18 @@ resource "aws_network_interface" "eth-test" {
 }
 */
 
-
-resource "aws_eip" "ip-test-env" {
-  vpc                       = true
-  instance                  = "${aws_spot_instance_request.test_worker.spot_instance_id}"
-  #associate_with_private_ip = "${cidrhost(var.subnet, 5)}"
-  network_interface = "${element(aws_network_interface.eth-text.*.id, count.index)}"
-
-  depends_on = ["aws_internet_gateway.test-env-gw"]
-  depends_on = ["aws_spot_instance_request.test_worker"]
-}
-
-
 resource "aws_spot_instance_request" "test_worker" {
   #count = "${var.something_count}"
 
   ami                    = "ami-0d71ea30463e0ff8d"
   spot_price             = "0.016"
   instance_type          = "t2.small"
+  subnet_id              = aws_subnet.subnet-test-spot.id
   private_ip             = "${cidrhost(var.subnet, 5)}"
   spot_type              = "one-time"
-  #block_duration_minutes = "120"
   wait_for_fulfillment   = "true"
   key_name               = "spot_key"
+  #block_duration_minutes = "120"
   #user_data              = "local.ec2_user_data" # no forces replacement, only one in the file
   #user_data_replace_on_change = "false"
 
@@ -153,9 +162,8 @@ resource "aws_spot_instance_request" "test_worker" {
 */
 
   # no forces replacement
-  vpc_security_group_ids = ["${aws_security_group.ingress-ssh-test.id}", "${aws_security_group.ingress-http-test.id}",
-  "${aws_security_group.ingress-https-test.id}"]
-  subnet_id = "${aws_subnet.subnet-test-spot.id}"
+  vpc_security_group_ids = [aws_security_group.ingress-ssh-test.id, aws_security_group.ingress-http-test.id,
+  aws_security_group.ingress-https-test.id]
 /*
   network_interface {
     network_interface_id = "${element(aws_network_interface.eth-test.*.id, count.index)}"
@@ -180,12 +188,16 @@ resource "aws_spot_instance_request" "test_worker" {
 */
   user_data = <<-EOF
         #!/bin/bash
+        mkdir /var/log/trak/
+        chmod 755 /var/log/trak/
+        echo "** start: terraform `date +%c` **" >> /var/log/trak/terraform.log
         sudo amazon-linux-extras install ansible2 -y
-        sudo yum install git -y
+        sudo yum install git -y 2>&1 /var/log/trak/terraform.log
         git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml
-        ansible-playbook /tmp/ansible_playbooks/ansible/nodejs.yml
+        ansible-playbook /tmp/ansible_playbooks/ansible/nodejs.yml      
         ansible-playbook /tmp/ansible_playbooks/ansible/django.yml
+        echo "** end: terraform `date +%c` **" >> /var/log/trak/terraform.log 2>&1
   EOF
 /*
   user_data = <<-EOF
@@ -203,10 +215,19 @@ resource "aws_spot_instance_request" "test_worker" {
         sudo chmod 644 /usr/share/nginx/html/*
 		    EOF
 */
+
   tags = {
     Name = "ec2-test-nginx-terraform"
   }
 
+  depends_on = [aws_vpc.test-spot, aws_key_pair.spot_key, aws_security_group.ingress-ssh-test, aws_security_group.ingress-http-test,
+  aws_security_group.ingress-https-test]
+
+}
+
+resource "aws_eip_association" "ip-test-env" {
+  instance_id   = aws_spot_instance_request.test_worker.spot_instance_id
+  allocation_id = aws_eip.ip-test-env.id
 }
 
 output "instance_ip_public" {

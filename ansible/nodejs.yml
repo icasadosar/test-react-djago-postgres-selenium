@@ -9,9 +9,14 @@
     domain: apptest.es
     path: tmp
     urlgit: https://github.com/icasadosar/
-    branch: main 
+    branch: main
+    pathlog: /var/log/trak
   become: yes
   tasks:
+
+  - debug:
+    msg: "start: ansible-playbook nodejs.yml"
+
   - name: install package repo epel form amazon linux 2
     shell: "amazon-linux-extras install epel -y"
 
@@ -75,10 +80,10 @@
       #single_branch: yes
       version: "{{ branch }}"
       
-  - name: install nodejs packages on packages.json
-    npm:
-      path: "/{{ path }}/{{ project }}/{{ app }}"
-      state: present
+#  - name: install nodejs packages on packages.json
+#    npm:
+#      path: "/{{ path }}/{{ project }}/{{ app }}"
+#     state: present
     #notify: restart nodejs
 
   - name: copy nginx site-{{ app }}
@@ -90,7 +95,24 @@
         mode: '0644'
     notify: restart nginx
 
-  - name: create directory /op/trak
+  - name: copy supervisord supervisord-npm.ini
+    template:
+        src: supervisord-npm.ini
+        dest: /etc/supervisord.d/npm.in
+        owner: root
+        group: root
+        mode: '0644'
+    notify: restart supervisord
+
+  - name: create directory log {{ pathlog }}
+    file:
+       path: {{ pathlog }}
+       state: directory
+       mode: '0775'
+       owner: root
+       group: root
+
+  - name: create directory opt /opt/trak
     file:
        path: /opt/trak
        state: directory
@@ -105,17 +127,25 @@
         mode: 0755
 
   - name: Run startup script
-    shell: /opt/trak/doStartupDjango.sh > /tmp/doStartupNodejs.log 2> /tmp/doStartupNodejs.err.log & # sleep 1
+    shell: /opt/trak/doStartupNodejs.sh > {{ pathlog }}/doStartupNodejs.log 2> {{ pathlog }}/doStartupNodejs.err.log & sleep 1
     args:
       chdir: /{{ path }}/{{ project }}/{{ app }}
     #async: 45
     #poll: 0 
+
+  - debug:
+    msg: "end: ansible-playbook nodejs.yml"
 
   handlers:
     - name: restart nginx
       service:
         name: nginx
         state: restarted
+
+    - name: restart supervisord
+      service: 
+        name: supervisord
+        state: restart
 
 #    - name: restart nodejs
       #command: cd /{{ path }}/{{ project }}/{{ app }} && nohup npm restart --prefix /{{ path }}/{{ project }}/{{ app }} > stdout.txt 2> stderr.txt &

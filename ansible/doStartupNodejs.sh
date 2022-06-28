@@ -1,3 +1,4 @@
 #!/bin/bash
 
-npm start
+sudo supervisorctl start gnpm:npm
+#npm start

@@ -9,9 +9,13 @@
     domain: apptest.es
     path: tmp
     urlgit: https://github.com/icasadosar/
-    branch: main 
+    branch: main
+    pathlog: /var/log/trak
   become: yes
   tasks:
+  - debug:
+    msg: "start: ansible-playbook django.yml"
+
   - name: install package repo epel form amazon linux 2
     shell: "amazon-linux-extras install epel -y"
 
@@ -89,6 +93,23 @@
         mode: '0644'
     notify: restart nginx
 
+  - name: copy supervisord supervisord-gunicorn.ini
+    template:
+        src: supervisord-gunicorn.ini
+        dest: /etc/supervisord.d/gunicorn.in
+        owner: root
+        group: root
+        mode: '0644'
+    notify: restart supervisord
+
+  - name: create directory log {{ pathlog }}
+    file:
+       path: {{ pathlog }}
+       state: directory
+       mode: '0775'
+       owner: root
+       group: root
+
   - name: create directory /op/trak
     file:
        path: /opt/trak
@@ -104,14 +125,22 @@
         mode: 0755
 
   - name: Run startup script
-    shell: /opt/trak/doStartupDjango.sh > /tmp/doStartupDjango.log 2> /tmp/doStartupDjango.err.log & #sleep 1
+    shell: /opt/trak/doStartupDjango.sh > {{ pathlog }}/doStartupDjango.log 2> {{ pathlog }}/doStartupDjango.err.log & sleep 1
     args:
       chdir: /{{ path }}/{{ project }}/{{ app }}
     #async: 45
-    #poll: 0 
+    #poll: 0
+  
+  - debug:
+    msg: "end: ansible-playbook django.yml"
 
   handlers:
     - name: restart nginx
       service:
         name: nginx
         state: restarted
+
+    - name: restart supervisord
+      service: 
+        name: supervisord
+        state: restart

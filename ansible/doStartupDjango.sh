@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python3 manage.py runserver
+sudo supervisorctl start guni:gunicorn
+#python3 manage.py runserver

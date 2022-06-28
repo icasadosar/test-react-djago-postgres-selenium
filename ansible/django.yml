@@ -104,7 +104,7 @@
 
   - name: create directory log {{ pathlog }}
     file:
-       path: {{ pathlog }}
+       path: "{{ pathlog }}"
        state: directory
        mode: '0775'
        owner: root

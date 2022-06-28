@@ -52,8 +52,7 @@ resource "aws_security_group" "ingress-ssh-test" {
 
   ingress {
     cidr_blocks = [
-      "83.58.219.210/32",
-      "88.28.10.247/32"
+      "83.58.219.209/32"
     ]
 
     from_port = 22

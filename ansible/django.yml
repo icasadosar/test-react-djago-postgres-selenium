@@ -12,7 +12,7 @@
     urlgit: https://github.com/icasadosar/
     branch: main
     pathlog: /var/log/trak
-    KEY_PATH: ~/.ssh/ssh-key-github
+    KEY_PATH: /home/ec2-user/.ssh/ssh-key-github
   become: yes
   tasks:
 

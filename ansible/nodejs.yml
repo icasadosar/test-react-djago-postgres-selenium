@@ -15,6 +15,7 @@
     KEY_PATH: ~/.ssh/ssh-key-github
   become: yes
   tasks:
+
   - name: debug start playbook
     debug:
       msg: "start: ansible-playbook nodejs.yml"
@@ -163,8 +164,7 @@
     debug:
       msg: "end: ansible-playbook nodejs.yml"
 
-  always:
-  - name: Kill the ssh-agent
+  - name: kill the ssh-agent
     shell: export pid=`ps -A | grep ssh-agent | awk 'NR==1{print $1}' | cut -d' ' -f1`; kill $pid
 
   handlers:

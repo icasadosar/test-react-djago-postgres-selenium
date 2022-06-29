@@ -1,5 +1,5 @@
 - hosts: localhost
-  strategy: debug
+  #strategy: debug
   vars:
     #domain: "helloworld.com"
     #ansible_user: "ec2-user"
@@ -8,10 +8,6 @@
     nginx_group: "nginx"
   become: yes
   tasks:
-
-  - name: debug start playbook
-    debug: 
-      msg: "start: ansible-playbook nginx.yml"
 
   - name: Enable nginx form amazon linux 2
     shell: "amazon-linux-extras enable nginx1"
@@ -81,10 +77,6 @@
       owner: "{{ nginx_user }}"
       group: "{{ nginx_group }}"
       mode: "0644"
-  
-  - name: debug end playbook
-    debug:
-      msg: "end: ansible-playbook nginx.yml"
 
 # - name: delete default nginx site
 #    file:

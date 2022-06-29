@@ -1,6 +1,3 @@
-# Provisions a spot EC2 instance with Centos 7.4 image
-# Zone for AMI is us-east-1
-
 provider "aws" {
   region = "eu-west-1"
 
@@ -74,7 +71,7 @@ resource "aws_security_group" "ingress-http-test" {
 
   ingress {
     cidr_blocks = [
-      "0.0.0.0/0"
+      "83.58.219.209/32"
     ]
 
     from_port = 80
@@ -96,7 +93,7 @@ resource "aws_security_group" "ingress-https-test" {
 
   ingress {
     cidr_blocks = [
-      "0.0.0.0/0"
+      "83.58.219.209/32"
     ]
 
     from_port = 443
@@ -140,13 +137,15 @@ resource "aws_network_interface" "eth-test" {
 }
 */
 
-/*
-data "aws_secretsmanager_secret_version" "creds-key-github" {
-  secret_id     = "ssh-key-github"
+data "aws_secretsmanager_secret_version" "git-pass" {
+  secret_id     = "arn:aws:secretsmanager:eu-west-1:522192775665:secret:testapp/git/pass-QfhnRl"
   #sensitive     = "true" 
   #secret_string = aws_secretsmanager_secret_version.key-github.secret_string
 }
-*/
+
+locals {
+  gitpass = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.git-pass.secret_string))["GIT_PASS"]
+}
 
 /*
 locals {
@@ -202,6 +201,7 @@ resource "aws_spot_instance_request" "test_worker" {
       ]
   }
 */
+
   user_data = <<-EOF
         #!/bin/bash
         sudo chmod 600 /home/ec2-user/.ssh/ssh-key-github
@@ -209,8 +209,13 @@ resource "aws_spot_instance_request" "test_worker" {
         chmod 755 /var/log/trak/
         echo "** start: terraform `date +%c` **" >> /var/log/trak/terraform.log
         sudo amazon-linux-extras install ansible2 -y
-        sudo yum install git -y 2>&1 /var/log/trak/terraform.log
+        sudo yum install git -y
+        #sudo yum install jq -y     
+        echo "export GIT_PASS=${local.gitpass}" >> /tmp/env-var.sh
+        source /tmp/env-var.sh
+        rm /tmp/env-var.sh
         git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks
+        ansible-playbook /tmp/ansible_playbooks/ansible/ansible.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nodejs.yml      
         ansible-playbook /tmp/ansible_playbooks/ansible/django.yml
@@ -297,6 +302,11 @@ output "endpoint_https" {
 }
 
 #output "example" {
-  #value = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.key-github.secret_string))
-  #sensitive = false
+#  value = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.git-pass.secret_string))["GIT_PASS"]
+#  #sensitive = false
+#}
+
+#output "example2" {
+#  value = local.gitpass
+#  #sensitive = false
 #}

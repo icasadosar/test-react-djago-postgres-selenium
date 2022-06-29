@@ -1,5 +1,5 @@
 - hosts: localhost
-  strategy: debug
+  #strategy: debug
   vars:
     #ansible_user: "ec2-user"
     #ansible_ssh_private_key_file: "~/.ssh/id_rsa"
@@ -9,20 +9,17 @@
     project: apptest
     domain: apptest.es
     path: tmp
-    urlgit: https://github.com/icasadosar/
-    branch: main
+    #urlgit: https://github.com/icasadosar/
+    urlgit: https://github.com/trakFront
+    branch: CI
     pathlog: /var/log/trak
     KEY_PATH: /home/ec2-user/.ssh/ssh-key-github
     GIT_USER: icasadosar
     GIT_PASS: "{{ lookup('env','GIT_PASS') }}"
     GIT_DOMAIN: github.com
-    GIT_REPO: icasadosar # trakFront
+    GIT_REPO: trakFront # icasadosar
   become: yes
   tasks:
-
-  - name: debug start playbook
-    debug:
-      msg: "start: ansible-playbook nodejs.yml"
 
   - name: install package repo epel form amazon linux 2
     shell: "amazon-linux-extras install epel -y"
@@ -137,7 +134,7 @@
         owner: root
         group: root
         mode: '0644'
-    notify: restart supervisord
+    #notify: restart supervisord
 
   - name: create directory log {{ pathlog }}
     file:
@@ -168,20 +165,16 @@
     #async: 45
     #poll: 0 
 
-  - name: debug end playbook
-    debug:
-      msg: "end: ansible-playbook nodejs.yml"
-
   handlers:
     - name: restart nginx
       service:
         name: nginx
         state: restarted
 
-    - name: restart supervisord
-      service: 
-        name: supervisord
-        state: restart
+#    - name: restart supervisord
+#      service: 
+#        name: supervisord
+#        state: restart
 
 #    - name: restart nodejs
       #command: cd /{{ path }}/{{ project }}/{{ app }} && nohup npm restart --prefix /{{ path }}/{{ project }}/{{ app }} > stdout.txt 2> stderr.txt &

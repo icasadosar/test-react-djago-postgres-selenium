@@ -13,6 +13,7 @@ provider "aws" {
 
 variable "cidr" { default = "10.0.0.0/16" }
 variable "subnet" { default = "10.0.1.0/24"}
+variable "ec2_instance" { default = "t3.large" }
 
 resource "aws_vpc" "test-spot" {
   cidr_block           = "${var.cidr}"
@@ -159,8 +160,8 @@ resource "aws_spot_instance_request" "test_worker" {
   #count = "${var.something_count}"
 
   ami                    = "ami-0d71ea30463e0ff8d"
-  spot_price             = "0.016"
-  instance_type          = "t2.small"
+  #spot_price             = "0.016"
+  instance_type          = "${var.ec2_instance}"
   subnet_id              = aws_subnet.subnet-test-spot.id
   private_ip             = "${cidrhost(var.subnet, 5)}"
   spot_type              = "one-time"
@@ -213,11 +214,11 @@ resource "aws_spot_instance_request" "test_worker" {
         #sudo yum install jq -y     
         echo "export GIT_PASS=${local.gitpass}" >> /tmp/env-var.sh
         source /tmp/env-var.sh
-        rm /tmp/env-var.sh
+        #rm /tmp/env-var.sh
         git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks
         ansible-playbook /tmp/ansible_playbooks/ansible/ansible.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml
-        ansible-playbook /tmp/ansible_playbooks/ansible/nodejs.yml      
+        ansible-playbook /tmp/ansible_playbooks/ansible/nodejs.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/django.yml
         echo "** end: terraform `date +%c` **" >> /var/log/trak/terraform.log 2>&1
   EOF

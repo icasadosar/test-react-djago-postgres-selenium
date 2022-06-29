@@ -16,6 +16,7 @@
     GIT_USER: icasadosar
     GIT_PASS: "{{ lookup('env','GIT_PASS') }}"
     GIT_DOMAIN: github.com
+    GIT_REPO: icasadosar # trakFront
   become: yes
   tasks:
 
@@ -84,6 +85,8 @@
 #      eval $(ssh-agent -s)
 #      ssh-add {{ KEY_PATH }}
 #      #git clone "{{ urlgit }}/{{ app }}" "/{{ path }}/{{ project }}/{{ app }}/."
+#      export pid=`ps -A | grep ssh-agent | awk 'NR==1{print $1}' | cut -d' ' -f1`; kill $pid
+
 #    become: no
 
 #  - name: Switch branch 
@@ -169,9 +172,6 @@
     debug:
       msg: "end: ansible-playbook nodejs.yml"
 
-  - name: kill the ssh-agent
-    shell: export pid=`ps -A | grep ssh-agent | awk 'NR==1{print $1}' | cut -d' ' -f1`; kill $pid
-
   handlers:
     - name: restart nginx
       service:
@@ -181,7 +181,7 @@
     - name: restart supervisord
       service: 
         name: supervisord
-        state: restarted
+        state: restart
 
 #    - name: restart nodejs
       #command: cd /{{ path }}/{{ project }}/{{ app }} && nohup npm restart --prefix /{{ path }}/{{ project }}/{{ app }} > stdout.txt 2> stderr.txt &

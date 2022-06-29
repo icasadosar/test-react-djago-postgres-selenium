@@ -13,6 +13,10 @@
     branch: main
     pathlog: /var/log/trak
     KEY_PATH: /home/ec2-user/.ssh/ssh-key-github
+    GIT_USER: icasadosar
+    GIT_PASS: "{{ lookup('env','GIT_PASS') }}"
+    GIT_DOMAIN: github.com
+    GIT_REPO: icasadosar # trakFront
   become: yes
   tasks:
 
@@ -75,10 +79,12 @@
 #      skip_broken: yes
 #      state: present
 
-  - name: Add SSH key to SSH agent
-    shell: |
-      eval $(ssh-agent -s)
-      ssh-add {{ KEY_PATH }}
+#  - name: Add SSH key to SSH agent
+#    shell: |
+#      eval $(ssh-agent -s)
+#      ssh-add {{ KEY_PATH }}
+#      export pid=`ps -A | grep ssh-agent | awk 'NR==1{print $1}' | cut -d' ' -f1`; kill $pid
+
 
 #  - name: Switch branch 
 #    shell: "{{ GIT_EXECUTABLE }} checkout {{ GIT_BRANCH }}"
@@ -95,7 +101,7 @@
 
   - name: git-clone repo
     git:
-      repo: "{{ urlgit }}/{{ app }}"
+      repo: "https://{{ GIT_USER }}:{{ GIT_PASS|urlencode()}}@{{ GIT_DOMAIN }}/{{ GIT_USER }}/{{ app }}"
       dest: "/{{ path }}/{{ project }}/{{ app }}"
       #single_branch: yes
       version: "{{ branch }}"
@@ -161,9 +167,6 @@
   - name: debug end playbook
     debug:
       msg: "end: ansible-playbook django.yml"
-
-  - name: kill the ssh-agent
-    shell: export pid=`ps -A | grep ssh-agent | awk 'NR==1{print $1}' | cut -d' ' -f1`; kill $pid
 
   handlers:
     - name: restart nginx

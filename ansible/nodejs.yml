@@ -13,6 +13,9 @@
     branch: main
     pathlog: /var/log/trak
     KEY_PATH: /home/ec2-user/.ssh/ssh-key-github
+    GIT_USER: icasadosar
+    GIT_PASS: "{{ lookup('env','GIT_PASS') }}"
+    GIT_DOMAIN: github.com
   become: yes
   tasks:
 
@@ -76,12 +79,12 @@
 #      skip_broken: yes
 #      state: present
 
-  - name: Add SSH key to SSH agent
-    shell: |
-      eval $(ssh-agent -s)
-      ssh-add {{ KEY_PATH }}
-      git clone "{{ urlgit }}/{{ app }}" "/{{ path }}/{{ project }}/{{ app }}/."
-    become: no
+#  - name: Add SSH key to SSH agent
+#    shell: |
+#      eval $(ssh-agent -s)
+#      ssh-add {{ KEY_PATH }}
+#      #git clone "{{ urlgit }}/{{ app }}" "/{{ path }}/{{ project }}/{{ app }}/."
+#    become: no
 
 #  - name: Switch branch 
 #    shell: "{{ GIT_EXECUTABLE }} checkout {{ GIT_BRANCH }}"
@@ -96,14 +99,13 @@
 #    args:
 #      chdir: "{{ CLONE_DEST }}"
 
-#  - name: git-clone repo
-#    git:
-#      repo: "{{ urlgit }}/{{ app }}"
-#      dest: "/{{ path }}/{{ project }}/{{ app }}"
-#      #single_branch: yes
-#      version: "{{ branch }}"
-#      accept_hostkey: yes
-#    become: no
+  - name: git-clone repo
+    git:
+      repo: "https://{{ GIT_USER }}:{{ GIT_PASS|urlencode()}}@{{ GIT_DOMAIN }}/{{ GIT_USER }}/{{ app }}"
+      dest: "/{{ path }}/{{ project }}/{{ app }}"
+      #single_branch: yes
+      version: "{{ branch }}"
+      #accept_hostkey: yes
       
   - name: install nodejs packages on packages.json
     npm:

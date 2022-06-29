@@ -10,11 +10,11 @@
     domain: apptest.es
     path: tmp
     #urlgit: https://github.com/icasadosar/
-    urlgit: https://github.com/trakBack/
+    urlgit: https://github.com/traksl/
     branch: CI
     pathlog: /var/log/trak
     KEY_PATH: /home/ec2-user/.ssh/ssh-key-github
-    GIT_USER: icasadosar
+    GIT_USER: traksl # icasadosar
     GIT_PASS: "{{ lookup('env','GIT_PASS') }}"
     GIT_DOMAIN: github.com
     GIT_REPO: trakBack # icasadosar

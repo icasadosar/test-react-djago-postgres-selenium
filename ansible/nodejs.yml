@@ -14,9 +14,10 @@
     #branch: CI
     pathlog: /var/log/trak
     KEY_PATH: /home/ec2-user/.ssh/ssh-key-github
-    GIT_USER: icasadosar
-    GIT_PASS: "{{ lookup('env','GIT_PASS') }}"
+    GIT_AUTH_USER: icasadosar
+    GIT_AUTH_PASS: "{{ lookup('env','GIT_PASS') }}"
     GIT_DOMAIN: github.com
+    GIT_USER: traksl
     GIT_REPO: trakFront # icasadosar
     GIT_BRANCH: CI
   become: yes
@@ -102,7 +103,7 @@
 
   - name: git-clone repo
     git:
-      repo: "https://{{ GIT_USER }}:{{ GIT_PASS|urlencode()}}@{{ GIT_DOMAIN }}/{{ GIT_USER }}/{{ GIT_REPO }}"
+      repo: "https://{{ GIT_AUTH_USER }}:{{ GIT_AUTH_PASS|urlencode()}}@{{ GIT_DOMAIN }}/{{ GIT_USER }}/{{ GIT_REPO }}"
       dest: "/{{ path }}/{{ project }}/{{ app }}"
       #single_branch: yes
       version: "{{ GIT_BRANCH }}"

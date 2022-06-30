@@ -148,6 +148,30 @@ locals {
   gitpass = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.git-pass.secret_string))["GIT_PASS"]
 }
 
+data "aws_secretsmanager_secret_version" "pass_db" {
+  secret_id      = "arn:aws:secretsmanager:eu-west-1:522192775665:secret:pass_db_trakDb_test-7In7DX"
+}
+
+locals {
+  pass_db = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.pass_db.secret_string))["pass_db_trakBack_test"]
+}
+
+locals {
+  user_db = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.pass_db.secret_string))["user_db_trakBack_test"]
+}
+
+locals {
+  name_db = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.pass_db.secret_string))["name_db_trakBack_test"]
+}
+
+locals {
+  host_db = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.pass_db.secret_string))["host_db_trakBack_test"]
+}
+
+locals {
+  port_db = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.pass_db.secret_string))["port_db_trakBack_test"]
+}
+
 /*
 locals {
   key-github = jsondecode(
@@ -213,13 +237,19 @@ resource "aws_spot_instance_request" "test_worker" {
         sudo yum install git -y
         #sudo yum install jq -y     
         echo "export GIT_PASS=${local.gitpass}" >> /tmp/env-var.sh
+        echo "export PASS_DB=${local.pass_db}" >> /tmp/env-var.sh
+        echo "export USER_DB=${local.user_db}" >> /tmp/env-var.sh
+        echo "export NAME_DB=${local.name_db}" >> /tmp/env-var.sh
+        echo "export HOST_DB=${local.host_db}" >> /tmp/env-var.sh
+        echo "export PORT_DB=${local.port_db}" >> /tmp/env-var.sh        
         source /tmp/env-var.sh
-        #rm /tmp/env-var.sh
+        rm /tmp/env-var.sh
         git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks
         ansible-playbook /tmp/ansible_playbooks/ansible/ansible.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nodejs.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/django.yml
+        ansible-playbook /tmp/ansible_playbooks/ansible/postgresql.yml        
         echo "** end: terraform `date +%c` **" >> /var/log/trak/terraform.log 2>&1
   EOF
 

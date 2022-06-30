@@ -1,0 +1,91 @@
+- hosts: all
+  vars:
+    #domain: "helloworld.com"
+    #ansible_user: "ec2-user"
+    #ansible_ssh_private_key_file: "~/.ssh/id_rsa"
+    com: trak
+    env: test
+    app: front
+    project: apptest
+    domain: apptest.es
+    path: tmp
+    pass_db: "{{ lookup('env','PASS_DB') }}"
+    user_db: "{{ lookup('env','USER_DB') }}"
+    name_db: "{{ lookup('env','NAME_DB') }}" # prod7Mar2
+    host_db: "{{ lookup('env','HOST_DB') }}"
+    port_db: "{{ lookup('env','PORT_DB') }}"
+    #pass_db: {{ pass_db_user | vault() }}
+  become: yes
+  tasks:
+
+  - name: install postgresql
+    yum:
+      name: 
+          - postgresql
+          - postgresql-server
+          - postgresql-contrib
+          - postgresql-libs
+          #- python3-psycopg2
+
+  - name: Check if PostgreSQL is initialized
+    stat:
+      path: "/var/lib/pgsql/data/pg_hba.conf"
+    register: postgres_data
+
+  - name: Initialize PostgreSQL
+    shell: "postgresql-setup initdb"
+    when: not postgres_data.stat.exists
+    notify: start postgres
+
+  - name: Create a new database with name '{{ name_db }}' and specific encoding and locale settings
+    community.postgresql.postgresql_db:
+      name: "{{ name_db }}"
+      encoding: UTF-8
+      lc_collate: en_US.UTF-8
+      lc_ctype: en_US.UTF-8
+      tablespace: pg_default
+      #template: template0
+
+  - name: Connect to '{{ name_db }}' database and set user's password with no expire date
+    community.postgresql.postgresql_user:
+      db: "{{ name_db }}"
+      name: "{{ user_db }}"
+      password: "{{ pass_db }}"
+      #priv: "CONNECT/products:ALL" ## deprecated using community.postgresql.postgresql_privs
+      expires: infinity
+
+  - name: Grant privs to database '{{ name_db }}'
+    community.postgresql.postgresql_privs:
+      type: database
+      database: "{{ name_db }}"
+      roles: "{{ user_db }}"
+      state: present
+      privs: ALL
+      grant_option: no
+      become_user: postgres
+      #type: table
+      #objs: books,authors
+      #schema: public
+
+
+#  - name: Grant privs to fisioterapeuta and Paciente on database 'name_db'
+#  community.postgresql.postgresql_privs:
+#      database: "{{ name_db }}"
+#      state: restore
+#      restore: "{{ name_db }}_dump.bz2"
+#      target: "/{{ path }}/{{ project }}/{{ app }}/"
+#      roles: fisioterapeuta,Paciente
+#      privs: ALL
+#      #type: table
+#      #objs: books,authors
+#      #schema: public
+#      #grant_option: yes
+#      #target_opts: "--schema-only"
+#      target_opts: "--no-owner --no-privileges"
+
+  handlers:
+    - name: start postgres
+      service:
+        name: postgresql
+        state: started
+        enabled: yes

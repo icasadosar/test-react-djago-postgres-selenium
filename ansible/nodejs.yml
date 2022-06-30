@@ -101,6 +101,18 @@
 #    args:
 #      chdir: "{{ CLONE_DEST }}"
 
+
+
+#  - name: Clone the repository
+#    shell: GIT_SSH_COMMAND="ssh -i {{ KEY_PATH }} -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" {{ GIT_EXECUTABLE }} clone {{ GIT_REPO }} {{ CLONE_DEST }}
+  
+#  - name: Switch branch 
+#    shell: "{{ GIT_EXECUTABLE }} checkout {{ GIT_BRANCH }}"
+#    args:
+#      chdir: "{{ CLONE_DEST }}"
+
+
+
   - name: git-clone repo
     git:
       repo: "https://{{ GIT_AUTH_USER }}:{{ GIT_AUTH_PASS|urlencode() }}@{{ GIT_DOMAIN }}/{{ GIT_USER }}/{{ GIT_REPO }}"
@@ -172,6 +184,7 @@
       service:
         name: nginx
         state: restarted
+        enabled: yes
 
 #    - name: restart supervisord
 #      service: 

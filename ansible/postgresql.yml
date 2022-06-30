@@ -35,10 +35,14 @@
   - name: Initialize PostgreSQL
     shell: "postgresql-setup initdb"
     when: not postgres_data.stat.exists
+
+  - name: start postgres
     notify: start postgres
 
   - name: Create db y user
-    shell: cat /tmp/ansible_playbooks/ansible/create-database-test.sql | sudo -u postgres psql
+    shell:
+      - cp /tmp/ansible_playbooks/ansible/create-database-test.sql > /tmp/db
+      - cat /tmp/ansible_playbooks/ansible/create-database-test.sql | sudo -u postgres psql
     
   handlers:
     - name: start postgres

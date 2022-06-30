@@ -234,6 +234,7 @@ resource "aws_spot_instance_request" "test_worker" {
         chmod 755 /var/log/trak/
         echo "** start: terraform `date +%c` **" >> /var/log/trak/terraform.log
         sudo amazon-linux-extras install ansible2 -y
+        ansible-galaxy collection install community.postgresql
         sudo yum install git -y
         #sudo yum install jq -y     
         echo "export GIT_PASS=${local.gitpass}" >> /tmp/env-var.sh

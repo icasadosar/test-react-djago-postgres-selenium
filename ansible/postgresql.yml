@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: localhost
   vars:
     #domain: "helloworld.com"
     #ansible_user: "ec2-user"
@@ -37,7 +37,7 @@
     when: not postgres_data.stat.exists
     notify: start postgres
 
-  - name: Create a new database with name '{{ name_db }}' and specific encoding and locale settings
+  - name: Create a new database with name "{{ name_db }}" and specific encoding and locale settings
     community.postgresql.postgresql_db:
       name: "{{ name_db }}"
       encoding: UTF-8
@@ -46,7 +46,7 @@
       tablespace: pg_default
       #template: template0
 
-  - name: Connect to '{{ name_db }}' database and set user's password with no expire date
+  - name: Connect to "{{ name_db }}" database and set user's password with no expire date
     community.postgresql.postgresql_user:
       db: "{{ name_db }}"
       name: "{{ user_db }}"
@@ -54,7 +54,7 @@
       #priv: "CONNECT/products:ALL" ## deprecated using community.postgresql.postgresql_privs
       expires: infinity
 
-  - name: Grant privs to database '{{ name_db }}'
+  - name: Grant privs to database "{{ name_db }}"
     community.postgresql.postgresql_privs:
       type: database
       database: "{{ name_db }}"

@@ -38,7 +38,7 @@
     notify: start postgres
 
   - name: Create db y user
-    shell: cat /tmp/ansible_playbooks/ansible/ansible-create-database-test.sql | sudo -u postgres psql
+    shell: cat /tmp/ansible_playbooks/ansible/create-database-test.sql | sudo -u postgres psql
     
   handlers:
     - name: start postgres

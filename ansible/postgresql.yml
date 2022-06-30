@@ -37,16 +37,21 @@
     when: not postgres_data.stat.exists
 
   - name: start postgres
-    notify: start postgres
+    service:
+      name: postgresql
+      state: started
+      enabled: yes
+
+  - name: copy script create db
+    template:
+        src: create-database-test.sql
+        dest: /tmp/db-test.sql
+        owner: root
+        group: root
+        mode: '0644'
 
   - name: Create db y user
-    shell:
-      - cp /tmp/ansible_playbooks/ansible/create-database-test.sql > /tmp/db
-      - cat /tmp/ansible_playbooks/ansible/create-database-test.sql | sudo -u postgres psql
-    
-  handlers:
-    - name: start postgres
-      service:
-        name: postgresql
-        state: started
-        enabled: yes
+    shell: |
+      cat /tmp/db-test.sql > /tmp/db
+      cat /tmp/db-test.sql | sudo -u postgres psql
+      rm /tmp/db-test.sql

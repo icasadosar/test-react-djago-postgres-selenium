@@ -244,7 +244,7 @@ resource "aws_spot_instance_request" "test_worker" {
         echo "export HOST_DB=${local.host_db}" >> /tmp/env-var.sh
         echo "export PORT_DB=${local.port_db}" >> /tmp/env-var.sh        
         source /tmp/env-var.sh
-        rm /tmp/env-var.sh
+        #rm /tmp/env-var.sh
         git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks
         ansible-playbook /tmp/ansible_playbooks/ansible/ansible.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml

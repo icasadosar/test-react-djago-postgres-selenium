@@ -183,8 +183,7 @@ locals {
 resource "aws_spot_instance_request" "test_worker" {
   #count = "${var.something_count}"
 
-  #ami                    = "ami-0d71ea30463e0ff8d" # Amazon Linux
-  ami                    = "ami-033657df95dbf281a"
+  ami                    = "ami-0d71ea30463e0ff8d"
   #spot_price             = "0.016"
   instance_type          = "${var.ec2_instance}"
   subnet_id              = aws_subnet.subnet-test-spot.id
@@ -236,7 +235,7 @@ resource "aws_spot_instance_request" "test_worker" {
         echo "** start: terraform `date +%c` **" >> /var/log/trak/terraform.log
         sudo amazon-linux-extras install ansible2 -y
         #####ansible-galaxy collection install community.postgresql # dependecy error
-        sudo yum update
+        sudo yum pupdate
         sudo yum install git -y
         #####sudo yum install jq -y     
         echo "export GIT_PASS=${local.gitpass}" >> /tmp/env-var.sh
@@ -246,7 +245,7 @@ resource "aws_spot_instance_request" "test_worker" {
         echo "export HOST_DB=${local.host_db}" >> /tmp/env-var.sh
         echo "export PORT_DB=${local.port_db}" >> /tmp/env-var.sh        
         source /tmp/env-var.sh
-        #rm /tmp/env-var.sh
+        rm /tmp/env-var.sh
         git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks
         #####ansible-playbook /tmp/ansible_playbooks/ansible/ansible.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml

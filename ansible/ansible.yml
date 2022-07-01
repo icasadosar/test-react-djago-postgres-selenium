@@ -1,6 +1,6 @@
 - hosts: localhost
   vars:
-    #var-name: value
+    var-name: foo
   become: yes
   tasks:
   - name: configure ansible

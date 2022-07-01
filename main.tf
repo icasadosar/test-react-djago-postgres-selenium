@@ -229,14 +229,14 @@ resource "aws_spot_instance_request" "test_worker" {
 
   user_data = <<-EOF
         #!/bin/bash
-        sudo chmod 600 /home/ec2-user/.ssh/ssh-key-github
+        #####sudo chmod 600 /home/ec2-user/.ssh/ssh-key-github
         mkdir /var/log/trak/
         chmod 755 /var/log/trak/
         echo "** start: terraform `date +%c` **" >> /var/log/trak/terraform.log
         sudo amazon-linux-extras install ansible2 -y
-        ansible-galaxy collection install community.postgresql
+        #####ansible-galaxy collection install community.postgresql # dependecy error
         sudo yum install git -y
-        #sudo yum install jq -y     
+        #####sudo yum install jq -y     
         echo "export GIT_PASS=${local.gitpass}" >> /tmp/env-var.sh
         echo "export PASS_DB=${local.pass_db}" >> /tmp/env-var.sh
         echo "export USER_DB=${local.user_db}" >> /tmp/env-var.sh
@@ -244,9 +244,9 @@ resource "aws_spot_instance_request" "test_worker" {
         echo "export HOST_DB=${local.host_db}" >> /tmp/env-var.sh
         echo "export PORT_DB=${local.port_db}" >> /tmp/env-var.sh        
         source /tmp/env-var.sh
-        #rm /tmp/env-var.sh
+        rm /tmp/env-var.sh
         git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks
-        ansible-playbook /tmp/ansible_playbooks/ansible/ansible.yml
+        #####ansible-playbook /tmp/ansible_playbooks/ansible/ansible.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nodejs.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/django.yml
@@ -284,19 +284,20 @@ resource "aws_eip_association" "ip-test-env" {
   instance_id   = aws_spot_instance_request.test_worker.spot_instance_id
   allocation_id = aws_eip.ip-test-env.id
 
-  provisioner "file" {
-    #content       = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.creds-key-github.secret_string))
-    source        = "/home/ics/.ssh/id-key-github"                    
-    destination   = "/home/ec2-user/.ssh/ssh-key-github"
+  ##### provisioner "file" {
+  #####  #content       = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.creds-key-github.secret_string))
+  #####  source        = "/home/ics/.ssh/id-key-github"                    
+  #####  destination   = "/home/ec2-user/.ssh/ssh-key-github"
 
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = "${file("/home/ics/.ssh/id_rsa")}"
-      host        = aws_eip.ip-test-env.public_ip
-      timeout     = "30s"
-    }
-  }
+  #####  connection {
+  #####    type        = "ssh"
+  #####    user        = "ec2-user"
+  #####    private_key = "${file("/home/ics/.ssh/id_rsa")}"
+  #####    host        = aws_eip.ip-test-env.public_ip
+  #####    timeout     = "30s"
+  #####  }
+
+  ##### }
 
 }
 

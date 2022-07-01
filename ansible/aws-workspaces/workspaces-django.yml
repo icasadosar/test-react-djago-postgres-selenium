@@ -1,0 +1,123 @@
+- hosts: localhost
+  #strategy: debug
+  vars:
+    #ansible_user: "ec2-user"
+    #ansible_ssh_private_key_file: "~/.ssh/id_rsa"
+    com: trak
+    env: test
+    app: back
+    project: apptest
+    domain: apptest.es
+    path: tmp
+    #urlgit: https://github.com/icasadosar/
+    #urlgit: https://github.com/traksl/
+    #branch: CI
+    pathlog: /var/log/trak
+    GIT_AUTH_USER: icasadosar
+    GIT_AUTH_PASS: "{{ lookup('env','GIT_PASS') }}"
+    GIT_DOMAIN: github.com
+    GIT_USER: traksl
+    GIT_REPO: trakBack
+    GIT_BRANCH: CI
+  become: yes
+  tasks:
+
+  - name: install package repo epel form amazon linux 2
+    shell: "amazon-linux-extras install epel -y"
+
+  - name: yum update
+    yum:
+      name: '*'
+      state: latest
+      update_cache: yes
+      update_only: yes
+    register: yum_update_status
+
+  - name: install compiler
+    yum:
+      name:
+        - gcc-c++
+        - make
+      state: present
+     
+  - name: install python
+    yum:
+      name: 
+        - python3
+        - python3-pip
+      state: present
+
+  - name: create log directory
+    file:
+      path: /var/log/nginx/{{ domain }}/{{ app }}
+      state: directory
+      mode: '0775'
+
+  - name: create error-log file
+    file:
+      path: /var/log/nginx/{{ domain }}/{{ app }}/error-{{ app }}.{{ domain }}-http-80.log
+      state: touch
+      mode: u=rw,g=r,o=r
+
+  - name: create access-log file
+    file:
+      path: /var/log/nginx/{{ domain }}/{{ app }}/access-{{ app }}.{{ domain }}-http-80.log
+      state: touch
+      mode: u=rw,g=r,o=r       
+
+#  - name: install nodejs
+#    yum:
+#      name: ['nodejs']
+#      skip_broken: yes
+#      state: present
+
+#  - name: install npm
+#    yum:
+#      name: ['npm']
+#      skip_broken: yes
+#      state: present
+
+#  - name: Add SSH key to SSH agent
+#    shell: |
+#      eval $(ssh-agent -s)
+#      ssh-add {{ KEY_PATH }}
+#      export pid=`ps -A | grep ssh-agent | awk 'NR==1{print $1}' | cut -d' ' -f1`; kill $pid
+
+#  - name: Switch branch 
+#    shell: "{{ GIT_EXECUTABLE }} checkout {{ GIT_BRANCH }}"
+#    args:
+#      chdir: "{{ CLONE_DEST }}"
+
+#  - name: Clone the repository
+#    shell: GIT_SSH_COMMAND="ssh -i {{ KEY_PATH }} -v -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" {{ GIT_EXECUTABLE }} clone {{ GIT_REPO }} {{ CLONE_DEST }}
+  
+#  - name: Switch branch 
+#    shell: "{{ GIT_EXECUTABLE }} checkout {{ GIT_BRANCH }}"
+#    args:
+#      chdir: "{{ CLONE_DEST }}"
+
+  - name: git-clone repo
+    git:
+      repo: "https://{{ GIT_AUTH_USER }}:{{ GIT_AUTH_PASS|urlencode() }}@{{ GIT_DOMAIN }}/{{ GIT_USER }}/{{ GIT_REPO }}"
+      dest: "/{{ path }}/{{ project }}/{{ app }}"
+      #single_branch: yes
+      version: "{{ GIT_BRANCH }}"
+      
+  - name: install python requeriments
+    pip:
+      requirements: "/{{ path }}/{{ project }}/{{ app }}/requirements.txt"
+      executable: pip3
+    #notify: restart nodejs
+
+  - name: create directory log {{ pathlog }}
+    file:
+       path: "{{ pathlog }}"
+       state: directory
+       mode: '0775'
+       owner: root
+       group: root
+
+#    - name: restart supervisord
+#      service: 
+#        name: supervisord
+#        state: restarted

@@ -235,8 +235,8 @@ resource "aws_spot_instance_request" "test_worker" {
   #count = "${var.something_count}"
 
   #ami                    = "ami-0d71ea30463e0ff8d" # Amazon Linux
-  #ami                    = "ami-033657df95dbf281a" # Amazon Linux Desktop
-  ami                    = "ami-0f68759fb5f855c36" # Trak Amazon Linux Desktop Test
+  ami                    = "ami-033657df95dbf281a" # Amazon Linux Desktop
+  #ami                    = "ami-0f68759fb5f855c36" # Trak Amazon Linux Desktop Test
   #spot_price             = "0.016"
   instance_type          = "${var.ec2_instance}"
   subnet_id              = aws_subnet.subnet-test-spot.id

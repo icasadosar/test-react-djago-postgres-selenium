@@ -302,7 +302,7 @@ resource "aws_spot_instance_request" "test_worker" {
         #rm /tmp/.env-var-git.sh
         git clone https://${var.GIT_AUTH_USER}:${local.GIT_AUTH_PASS}@github.com/${var.GIT_SITE}/${var.GIT_REPO} /tmp/ansible_playbooks
         chown ec2-user:ec2-user -R /tmp/ansible_playbooks/*
-        #####ansible-playbook /tmp/ansible_playbooks/ansible/nginx/nginx.yml
+        ansible-playbook /tmp/ansible_playbooks/ansible/nginx/nginx.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nodejs/nodejs.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/django/django.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/postgresql/postgresql.yml

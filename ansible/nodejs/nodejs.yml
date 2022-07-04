@@ -8,6 +8,7 @@
     app: front
     project: trak
     domain: trakapptest.es
+    path: var
     pathlog: /var/log/trak
     KEY_PATH: /home/ec2-user/.ssh/ssh-key-github
     GIT_AUTH_USER: icasadosar
@@ -107,8 +108,6 @@
 #    args:
 #      chdir: "{{ CLONE_DEST }}"
 
-
-
   - name: git-clone repo
     git:
       repo: "https://{{ GIT_AUTH_USER }}:{{ GIT_AUTH_PASS|urlencode() }}@{{ GIT_DOMAIN }}/{{ GIT_USER }}/{{ GIT_REPO }}"
@@ -125,7 +124,7 @@
 
   - name: copy nginx site-{{ app }}
     template:
-        src: site-{{ app }}-{{ domain }}-http-80.conf
+        src: site-{{ app }}-http-80.conf
         dest: /etc/nginx/conf.d/{{ app }}.{{ domain }}-http-80.conf
         owner: root
         group: root

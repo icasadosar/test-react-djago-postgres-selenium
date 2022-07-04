@@ -11,9 +11,22 @@ provider "aws" {
   }
 }
 
+/*provider "hashicorp-http" {
+      source  = "hashicorp/http"
+      version = "~> 2.0"
+}*/
+
 variable "cidr" { default = "10.0.0.0/16" }
 variable "subnet" { default = "10.0.1.0/24"}
 variable "ec2_instance" { default = "t3.large" }
+variable "my-public-ip" { default = "83.58.218.223" }
+
+/*data "http" "my-ip-public" {
+  provider = hashicorp-http
+  url = "https://ifconfig.io/ip"
+}*/
+
+#variable "my-public-ip" { default = "${my-public-ip}" }
 
 resource "aws_vpc" "test-spot" {
   cidr_block           = "${var.cidr}"
@@ -50,7 +63,7 @@ resource "aws_security_group" "ingress-ssh-test" {
 
   ingress {
     cidr_blocks = [
-      "83.58.218.223/32"
+      "${var.my-public-ip}/32"
     ]
 
     from_port = 22
@@ -72,7 +85,7 @@ resource "aws_security_group" "ingress-http-test" {
 
   ingress {
     cidr_blocks = [
-      "83.58.219.209/32"
+      "${var.my-public-ip}/32"
     ]
 
     from_port = 80
@@ -94,11 +107,55 @@ resource "aws_security_group" "ingress-https-test" {
 
   ingress {
     cidr_blocks = [
-      "83.58.219.209/32"
+      "${var.my-public-ip}/32"
     ]
 
     from_port = 443
     to_port   = 443
+    protocol  = "tcp"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "ingress-vnc-test" {
+  name   = "allow-vnc-sg"
+  vpc_id = "${aws_vpc.test-spot.id}"
+
+  ingress {
+    cidr_blocks = [
+      "${var.my-public-ip}/32"
+    ]
+
+    from_port = 5091
+    to_port   = 5091
+    protocol  = "tcp"
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "ingress-rdp-test" {
+  name   = "allow-rdp-sg"
+  vpc_id = "${aws_vpc.test-spot.id}"
+
+  ingress {
+    cidr_blocks = [
+      "${var.my-public-ip}/32"
+    ]
+
+    from_port = 3389
+    to_port   = 3389
     protocol  = "tcp"
   }
 
@@ -188,7 +245,7 @@ resource "aws_spot_instance_request" "test_worker" {
   #spot_price             = "0.016"
   instance_type          = "${var.ec2_instance}"
   subnet_id              = aws_subnet.subnet-test-spot.id
-  private_ip             = "${cidrhost(var.subnet, 5)}"
+  #private_ip             = "${cidrhost(var.subnet, 10)}"
   spot_type              = "one-time"
   wait_for_fulfillment   = "true"
   key_name               = "spot_key"
@@ -204,7 +261,7 @@ resource "aws_spot_instance_request" "test_worker" {
 
   # no forces replacement
   vpc_security_group_ids = [aws_security_group.ingress-ssh-test.id, aws_security_group.ingress-http-test.id,
-  aws_security_group.ingress-https-test.id]
+  aws_security_group.ingress-https-test.id, aws_security_group.ingress-vnc-test.id, aws_security_group.ingress-rdp-test.id]
 /*
   network_interface {
     network_interface_id = "${element(aws_network_interface.eth-test.*.id, count.index)}"
@@ -278,7 +335,7 @@ resource "aws_spot_instance_request" "test_worker" {
   }
 
   depends_on = [aws_vpc.test-spot, aws_key_pair.spot_key, aws_security_group.ingress-ssh-test, aws_security_group.ingress-http-test,
-  aws_security_group.ingress-https-test]
+  aws_security_group.ingress-https-test, aws_security_group.ingress-vnc-test, aws_security_group.ingress-rdp-test]
 
 }
 
@@ -329,11 +386,11 @@ resource "ssh_resource" "init" {
 */
 
 output "instance_ip_public" {
-  value = "ssh -i ~/.ssh/id_rsa ec2-user@${aws_eip.ip-test-env.public_ip}"
+  value = "ssh -i ~/.ssh/id_rsa ec2-user@${aws_eip.ip-test-env.public_dns}"
 }
 
 output "endpoint_https" {
-  value = "http://${aws_eip.ip-test-env.public_ip}/index.html"
+  value = "http://${aws_eip.ip-test-env.public_dns}/index.html"
 }
 
 #output "example" {

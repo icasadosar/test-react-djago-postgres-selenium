@@ -123,6 +123,14 @@
       name: supervisor
       state: present
 
+  - name: install chromedriver
+    yum:
+      name: chromedriver
+      state: present
+      
+  #- name: install chrome desktop
+  #  shell: curl https://intoli.com/install-google-chrome.sh | bash
+
   - name: copy supervisord supervisord-gunicorn.ini
     template:
         src: supervisord-gunicorn.ini
@@ -154,12 +162,12 @@
         dest: /opt/trak/doStartupDjango.sh
         mode: 0755
 
-  - name: Run startup script
-    shell: /opt/trak/doStartupDjango.sh > {{ pathlog }}/doStartupDjango.log 2> {{ pathlog }}/doStartupDjango.err.log & sleep 1
-    args:
-      chdir: /{{ path }}/{{ project }}/{{ app }}
-    #async: 45
-    #poll: 0
+  #- name: Run startup script
+  #  shell: /opt/trak/doStartupDjango.sh > {{ pathlog }}/doStartupDjango.log 2> {{ pathlog }}/doStartupDjango.err.log & sleep 1
+  #  args:
+  #    chdir: /{{ path }}/{{ project }}/{{ app }}
+  #  #async: 45
+  #  #poll: 0
 
   handlers:
     - name: restart nginx

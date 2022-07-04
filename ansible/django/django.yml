@@ -102,6 +102,12 @@
       dest: "/{{ path }}/{{ project }}/{{ app }}"
       #single_branch: yes
       version: "{{ GIT_BRANCH }}"
+
+  - name: chown path repo
+    file:
+      path: "/{{ path }}/{{ project }}/{{ app }}"
+      owner: "{{ ansible_user }}"
+      group: "{{ ansible_user }}"
       
   - name: install python requeriments
     pip:
@@ -145,8 +151,8 @@
        path: "{{ pathlog }}"
        state: directory
        mode: '0775'
-       owner: root
-       group: root
+       owner: "{{ ansible_user }}"
+       group: "{{ ansible_user }}"
 
   - name: create directory log selenium
     file:

@@ -1,17 +1,13 @@
 - hosts: localhost
   #strategy: debug
   vars:
-    #ansible_user: "ec2-user"
+    ansible_user: "ec2-user"
     #ansible_ssh_private_key_file: "~/.ssh/id_rsa"
     com: trak
     env: test
     app: front
     project: trak
     domain: trakapptest.es
-    path: var
-    #urlgit: https://github.com/icasadosar/
-    #urlgit: https://github.com/traksl/
-    #branch: CI
     pathlog: /var/log/trak
     KEY_PATH: /home/ec2-user/.ssh/ssh-key-github
     GIT_AUTH_USER: icasadosar
@@ -155,22 +151,24 @@
        path: "{{ pathlog }}"
        state: directory
        mode: '0775'
-       owner: root
-       group: root
+       owner: "{{ ansible_user }}"
+       group: "{{ ansible_user }}"
 
   - name: create directory opt /opt/trak
     file:
        path: /opt/trak
        state: directory
        mode: '0775'
-       owner: root
-       group: root
+       owner: "{{ ansible_user }}"
+       group: "{{ ansible_user }}"
 
   - name: copy startup script to /opt directory
     template:
         src: doStartupNodejs.sh
         dest: /opt/trak/doStartupNodejs.sh
         mode: 0755
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
 
   - name: run startup script
     shell: /opt/trak/doStartupNodejs.sh > {{ pathlog }}/doStartupNodejs.log 2> {{ pathlog }}/doStartupNodejs.err.log & sleep 1

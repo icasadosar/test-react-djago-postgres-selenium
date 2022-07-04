@@ -196,7 +196,7 @@ data "aws_secretsmanager_secret_version" "GIT_PASS" {
 }
 
 locals {
-  GIT_PASS = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.GIT_PASS.secret_string))["GIT_PASS"]
+  GIT_AUTH_PASS = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.GIT_PASS.secret_string))["GIT_PASS"]
 }
 
 data "aws_secretsmanager_secret_version" "CONF_DB" {
@@ -234,9 +234,7 @@ locals {
 resource "aws_spot_instance_request" "test_worker" {
   #count = "${var.something_count}"
 
-  #ami                    = "ami-0d71ea30463e0ff8d" # Amazon Linux
-  ami                    = "ami-033657df95dbf281a" # Amazon Linux Desktop
-  #ami                    = "ami-0f68759fb5f855c36" # Trak Amazon Linux Desktop Test
+  ami                    = "${var.ec2_ami}" # Amazon Linux Desktop
   #spot_price             = "0.016"
   instance_type          = "${var.ec2_instance}"
   subnet_id              = aws_subnet.subnet-test-spot.id
@@ -285,12 +283,12 @@ resource "aws_spot_instance_request" "test_worker" {
         mkdir /var/log/trak/
         chmod 755 /var/log/trak/
         echo "** start: terraform `date +%c` **" >> /var/log/trak/terraform.log
-        sudo amazon-linux-extras install ansible2 -y
+        amazon-linux-extras install ansible2 -y
         #####ansible-galaxy collection install community.postgresql # dependecy error
-        sudo yum update
-        sudo yum install git -y
+        yum update
+        yum install git -y
         #####sudo yum install jq -y
-        echo "export GIT_PASS=${local.GIT_PASS}" >> /tmp/.env-var-git.sh
+        echo "export GIT_PASS=${local.GIT_AUTH_PASS}" >> /tmp/.env-var-git.sh
         echo "export PASS_DB=${local.PASS_DB}" >> /tmp/.env-var.sh
         echo "export USER_DB=${local.USER_DB}" >> /tmp/.env-var.sh
         echo "export NAME_DB=${local.NAME_DB}" >> /tmp/.env-var.sh
@@ -302,12 +300,12 @@ resource "aws_spot_instance_request" "test_worker" {
         cat /tmp/.env-var.sh >> /home/ec2-user/.bash_profile
         #rm /tmp/.env-var.sh
         #rm /tmp/.env-var-git.sh
-        git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks
-        #####ansible-playbook /tmp/ansible_playbooks/ansible/ansible.yml
-        ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml
-        ansible-playbook /tmp/ansible_playbooks/ansible/nodejs.yml
-        ansible-playbook /tmp/ansible_playbooks/ansible/django.yml
-        ansible-playbook /tmp/ansible_playbooks/ansible/postgresql.yml
+        git clone https://${var.GIT_AUTH_USER}:${local.GIT_PASS}@github.com/${var.GIT_SITE}/${var.GIT_REPO} /tmp/ansible_playbooks
+        chown ec2-user:ec2-user -R /tmp/ansible_playbooks/*
+        ansible-playbook /tmp/ansible_playbooks/ansible/nginx/nginx.yml
+        ansible-playbook /tmp/ansible_playbooks/ansible/nodejs/nodejs.yml
+        ansible-playbook /tmp/ansible_playbooks/ansible/django/django.yml
+        ansible-playbook /tmp/ansible_playbooks/ansible/postgres/postgresql.yml
         echo "** end: terraform `date +%c` **" >> /var/log/trak/terraform.log 2>&1
   EOF
 

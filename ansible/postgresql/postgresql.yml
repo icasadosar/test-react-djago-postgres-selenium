@@ -6,9 +6,9 @@
     com: trak
     env: test
     app: front
-    project: apptest
-    domain: apptest.es
-    path: tmp
+    project: trak
+    domain: trakapptest.es
+    path: var
     PASS_DB: "{{ lookup('env','PASS_DB') }}"
     USER_DB: "{{ lookup('env','USER_DB') }}"
     NAME_DB: "{{ lookup('env','NAME_DB') }}"

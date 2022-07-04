@@ -18,7 +18,7 @@
     GIT_DOMAIN: github.com
     GIT_USER: traksl
     GIT_REPO: trakBack
-    GIT_BRANCH: CI
+    GIT_BRANCH: "{{ lookup('env','GIT_BRANCH') }}"
   become: yes
   tasks:
 
@@ -123,22 +123,22 @@
       name: supervisor
       state: present
 
+  - name: install chrome desktop
+    shell: curl https://intoli.com/install-google-chrome.sh | bash
+
   - name: install chromedriver
     yum:
       name: chromedriver
       state: present
-      
-  #- name: install chrome desktop
-  #  shell: curl https://intoli.com/install-google-chrome.sh | bash
 
-  - name: copy supervisord supervisord-gunicorn.ini
-    template:
-        src: supervisord-gunicorn.ini
-        dest: /etc/supervisord.d/gunicorn.ini
-        owner: root
-        group: root
-        mode: '0644'
-    #notify: restart supervisord
+#  - name: copy supervisord supervisord-gunicorn.ini
+#    template:
+#        src: supervisord-gunicorn.ini
+#        dest: /etc/supervisord.d/gunicorn.ini
+#        owner: root
+#        group: root
+#       mode: '0644'
+#    #notify: restart supervisord
 
   - name: create directory log {{ pathlog }}
     file:
@@ -148,19 +148,19 @@
        owner: root
        group: root
 
-  - name: create directory /op/trak
-    file:
-       path: /opt/trak
-       state: directory
-       mode: '0775'
-       owner: root
-       group: root
+#  - name: create directory /opt/trak
+#    file:
+#       path: /opt/trak
+#       state: directory
+#       mode: '0775'
+#       owner: root
+#       group: root
 
-  - name: copy startup script to /opt directory
-    template:
-        src: doStartupDjango.sh
-        dest: /opt/trak/doStartupDjango.sh
-        mode: 0755
+#  - name: copy startup script to /opt directory
+#    template:
+#        src: doStartupDjango.sh
+#        dest: /opt/trak/doStartupDjango.sh
+#       mode: 0755
 
   #- name: Run startup script
   #  shell: /opt/trak/doStartupDjango.sh > {{ pathlog }}/doStartupDjango.log 2> {{ pathlog }}/doStartupDjango.err.log & sleep 1

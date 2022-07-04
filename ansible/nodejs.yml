@@ -19,7 +19,7 @@
     GIT_DOMAIN: github.com
     GIT_USER: traksl
     GIT_REPO: trakFront # icasadosar
-    GIT_BRANCH: CI
+    GIT_BRANCH: "{{ lookup('env','GIT_BRANCH') }}"
   become: yes
   tasks:
 
@@ -177,7 +177,7 @@
     args:
       chdir: /{{ path }}/{{ project }}/{{ app }}
     #async: 45
-    #poll: 0 
+    #poll: 0
 
   handlers:
     - name: restart nginx

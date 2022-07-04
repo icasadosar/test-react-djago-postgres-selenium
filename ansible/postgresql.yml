@@ -9,11 +9,11 @@
     project: apptest
     domain: apptest.es
     path: tmp
-    pass_db: "{{ lookup('env','PASS_DB') }}"
-    user_db: "{{ lookup('env','USER_DB') }}"
-    name_db: "{{ lookup('env','NAME_DB') }}" # prod7Mar2
-    host_db: "{{ lookup('env','HOST_DB') }}"
-    port_db: "{{ lookup('env','PORT_DB') }}"
+    PASS_DB: "{{ lookup('env','PASS_DB') }}"
+    USER_DB: "{{ lookup('env','USER_DB') }}"
+    NAME_DB: "{{ lookup('env','NAME_DB') }}"
+    HOST_DB: "{{ lookup('env','HOST_DB') }}"
+    PORT_DB: "{{ lookup('env','PORT_DB') }}"
     #pass_db: {{ pass_db_user | vault() }}
   become: yes
   tasks:
@@ -35,6 +35,15 @@
   - name: Initialize PostgreSQL
     shell: "postgresql-setup initdb"
     when: not postgres_data.stat.exists
+
+  - name: copy pg_hba.conf
+    template:
+        src: pg_hba-trust.conf
+        dest: /var/lib/pgsql/data/pg_hba.conf
+        backup: yes
+        owner: root
+        group: root
+        mode: '0644'
 
   - name: start postgres
     service:

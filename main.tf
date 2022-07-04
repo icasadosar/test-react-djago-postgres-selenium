@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "4.19.0"
+    }
+  }
+}
+
 provider "aws" {
   region = "eu-west-1"
 
@@ -10,23 +19,6 @@ provider "aws" {
     }
   }
 }
-
-/*provider "hashicorp-http" {
-      source  = "hashicorp/http"
-      version = "~> 2.0"
-}*/
-
-variable "cidr" { default = "10.0.0.0/16" }
-variable "subnet" { default = "10.0.1.0/24"}
-variable "ec2_instance" { default = "t3.large" }
-variable "my-public-ip" { default = "83.58.218.223" }
-
-/*data "http" "my-ip-public" {
-  provider = hashicorp-http
-  url = "https://ifconfig.io/ip"
-}*/
-
-#variable "my-public-ip" { default = "${my-public-ip}" }
 
 resource "aws_vpc" "test-spot" {
   cidr_block           = "${var.cidr}"
@@ -79,6 +71,7 @@ resource "aws_security_group" "ingress-ssh-test" {
   }
 }
 
+/*
 resource "aws_security_group" "ingress-http-test" {
   name   = "allow-http-sg"
   vpc_id = "${aws_vpc.test-spot.id}"
@@ -122,6 +115,7 @@ resource "aws_security_group" "ingress-https-test" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+*/
 
 resource "aws_security_group" "ingress-vnc-test" {
   name   = "allow-vnc-sg"
@@ -195,38 +189,38 @@ resource "aws_network_interface" "eth-test" {
 }
 */
 
-data "aws_secretsmanager_secret_version" "git-pass" {
+data "aws_secretsmanager_secret_version" "GIT_PASS" {
   secret_id     = "arn:aws:secretsmanager:eu-west-1:522192775665:secret:testapp/git/pass-QfhnRl"
   #sensitive     = "true" 
   #secret_string = aws_secretsmanager_secret_version.key-github.secret_string
 }
 
 locals {
-  gitpass = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.git-pass.secret_string))["GIT_PASS"]
+  GIT_PASS = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.GIT_PASS.secret_string))["GIT_PASS"]
 }
 
-data "aws_secretsmanager_secret_version" "pass_db" {
+data "aws_secretsmanager_secret_version" "CONF_DB" {
   secret_id      = "arn:aws:secretsmanager:eu-west-1:522192775665:secret:pass_db_trakDb_test-7In7DX"
 }
 
 locals {
-  pass_db = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.pass_db.secret_string))["pass_db_trakBack_test"]
+  PASS_DB = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.CONF_DB.secret_string))["pass_db_trakBack_test"]
 }
 
 locals {
-  user_db = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.pass_db.secret_string))["user_db_trakBack_test"]
+  USER_DB = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.CONF_DB.secret_string))["user_db_trakBack_test"]
 }
 
 locals {
-  name_db = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.pass_db.secret_string))["name_db_trakBack_test"]
+  NAME_DB = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.CONF_DB.secret_string))["name_db_trakBack_test"]
 }
 
 locals {
-  host_db = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.pass_db.secret_string))["host_db_trakBack_test"]
+  HOST_DB = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.CONF_DB.secret_string))["host_db_trakBack_test"]
 }
 
 locals {
-  port_db = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.pass_db.secret_string))["port_db_trakBack_test"]
+  PORT_DB = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.CONF_DB.secret_string))["port_db_trakBack_test"]
 }
 
 /*
@@ -241,7 +235,8 @@ resource "aws_spot_instance_request" "test_worker" {
   #count = "${var.something_count}"
 
   #ami                    = "ami-0d71ea30463e0ff8d" # Amazon Linux
-  ami                    = "ami-033657df95dbf281a"
+  #ami                    = "ami-033657df95dbf281a" # Amazon Linux Desktop
+  ami                    = "ami-0f68759fb5f855c36" # Trak Amazon Linux Desktop Test
   #spot_price             = "0.016"
   instance_type          = "${var.ec2_instance}"
   subnet_id              = aws_subnet.subnet-test-spot.id
@@ -260,8 +255,7 @@ resource "aws_spot_instance_request" "test_worker" {
 */
 
   # no forces replacement
-  vpc_security_group_ids = [aws_security_group.ingress-ssh-test.id, aws_security_group.ingress-http-test.id,
-  aws_security_group.ingress-https-test.id, aws_security_group.ingress-vnc-test.id, aws_security_group.ingress-rdp-test.id]
+  vpc_security_group_ids = [aws_security_group.ingress-ssh-test.id, aws_security_group.ingress-vnc-test.id, aws_security_group.ingress-rdp-test.id]
 /*
   network_interface {
     network_interface_id = "${element(aws_network_interface.eth-test.*.id, count.index)}"
@@ -295,21 +289,25 @@ resource "aws_spot_instance_request" "test_worker" {
         #####ansible-galaxy collection install community.postgresql # dependecy error
         sudo yum update
         sudo yum install git -y
-        #####sudo yum install jq -y     
-        echo "export GIT_PASS=${local.gitpass}" >> /tmp/env-var.sh
-        echo "export PASS_DB=${local.pass_db}" >> /tmp/env-var.sh
-        echo "export USER_DB=${local.user_db}" >> /tmp/env-var.sh
-        echo "export NAME_DB=${local.name_db}" >> /tmp/env-var.sh
-        echo "export HOST_DB=${local.host_db}" >> /tmp/env-var.sh
-        echo "export PORT_DB=${local.port_db}" >> /tmp/env-var.sh        
-        source /tmp/env-var.sh
-        #rm /tmp/env-var.sh
+        #####sudo yum install jq -y
+        echo "export GIT_PASS=${local.GIT_PASS}" >> /tmp/.env-var-git.sh
+        echo "export PASS_DB=${local.PASS_DB}" >> /tmp/.env-var.sh
+        echo "export USER_DB=${local.USER_DB}" >> /tmp/.env-var.sh
+        echo "export NAME_DB=${local.NAME_DB}" >> /tmp/.env-var.sh
+        echo "export HOST_DB=${local.HOST_DB}" >> /tmp/.env-var.sh
+        echo "export PORT_DB=${local.PORT_DB}" >> /tmp/.env-var.sh
+        echo "export GIT_BRANCH=${var.GIT_BRANCH}" >> /tmp/.env-var.sh
+        source /tmp/.env-var.sh
+        source /tmp/.env-var-git.sh
+        cat /tmp/.env-var.sh >> /home/ec2-user/.bash_profile
+        #rm /tmp/.env-var.sh
+        #rm /tmp/.env-var-git.sh
         git clone https://github.com/icasadosar/prueba01 /tmp/ansible_playbooks
         #####ansible-playbook /tmp/ansible_playbooks/ansible/ansible.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nodejs.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/django.yml
-        ansible-playbook /tmp/ansible_playbooks/ansible/postgresql.yml        
+        ansible-playbook /tmp/ansible_playbooks/ansible/postgresql.yml
         echo "** end: terraform `date +%c` **" >> /var/log/trak/terraform.log 2>&1
   EOF
 
@@ -334,8 +332,7 @@ resource "aws_spot_instance_request" "test_worker" {
     Name = "ec2-trak-test-ci-terraform"
   }
 
-  depends_on = [aws_vpc.test-spot, aws_key_pair.spot_key, aws_security_group.ingress-ssh-test, aws_security_group.ingress-http-test,
-  aws_security_group.ingress-https-test, aws_security_group.ingress-vnc-test, aws_security_group.ingress-rdp-test]
+  depends_on = [aws_vpc.test-spot, aws_key_pair.spot_key, aws_security_group.ingress-ssh-test, aws_security_group.ingress-vnc-test, aws_security_group.ingress-rdp-test]
 
 }
 
@@ -385,12 +382,20 @@ resource "ssh_resource" "init" {
 }
 */
 
-output "instance_ip_public" {
-  value = "ssh -i ~/.ssh/id_rsa ec2-user@${aws_eip.ip-test-env.public_dns}"
+locals {
+  pass_rdp = substr(aws_spot_instance_request.test_worker.spot_instance_id, 2, 8)
 }
 
-output "endpoint_https" {
-  value = "http://${aws_eip.ip-test-env.public_dns}/index.html"
+output "ssh_connection" {
+  value = "ssh -i ~/.ssh/id_rsa ec2-user@${aws_eip.ip-test-env.public_ip}"
+}
+
+#output "endpoint_https" {
+#  value = "http://${aws_eip.ip-test-env.public_ip}/index.html"
+#}
+
+output "rdp_connection" {
+  value = "cmd /k cmdkey /generic:TEMPSRV/${aws_eip.ip-test-env.public_ip} /user:ec2-user /pass:${local.pass_rdp} & mstsc /f /v:${aws_eip.ip-test-env.public_ip}"
 }
 
 #output "example" {

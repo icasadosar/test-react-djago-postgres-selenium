@@ -134,7 +134,7 @@
 
   - name: install chromedriver
     yum:
-      name: chromedrivermkdi
+      name: chromedriver
       state: present
 
 #  - name: copy supervisord supervisord-gunicorn.ini

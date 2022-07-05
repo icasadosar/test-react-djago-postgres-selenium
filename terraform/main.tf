@@ -190,7 +190,7 @@ resource "aws_network_interface" "eth-test" {
 */
 
 data "aws_secretsmanager_secret_version" "GIT_DEVOPS_AUTH_PASS" {
-  secret_id     = "arn:aws:secretsmanager:eu-west-1:522192775665:secret:GIT_DEVOPS_PASS-XXXXXX"
+  secret_id     = "arn:aws:secretsmanager:eu-west-1:522192775665:secret:GIT_DEVOPS_AUTH_PASS-MmeQ3L"
   #sensitive     = "true" 
   #secret_string = aws_secretsmanager_secret_version.key-github.secret_string
 }

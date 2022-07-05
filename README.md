@@ -70,9 +70,11 @@ $ git clone https://github.com/icasadosar/prueba01
 $ cd ./terraform
 ```
 
-- Modificar la variable *my-public-ip* en el fichero *./variables.tf* por la la ip publica de tu conexión https://ifconfig.io/ip
+- Modificar la variable *my-public-ip* y *GIT_BRANCH* en el fichero *./variables.tf* 
 
-![image](https://user-images.githubusercontent.com/753352/177284779-b4e2eb63-4793-4aa3-a66b-d8034bcc69fe.png)
+*Nota: para obtener la ip publica: https://ifconfig.io/ip
+
+![image](https://user-images.githubusercontent.com/753352/177373517-5d011551-2656-4fd8-a570-65be97e15822.png)
 
 - Iniciar proyecto e instalación de Plugins
 

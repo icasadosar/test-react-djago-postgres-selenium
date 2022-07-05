@@ -89,17 +89,21 @@ $ terraform apply
 
 ![image](https://user-images.githubusercontent.com/753352/177371449-4729b63a-6c4b-412d-aa61-06b6cce48ff7.png)
 
-- Eliminación del proyecto, se debe de ejecutar cuando se ha finalizado los test para que se elimine la infraestructura
+- El entorno queda totalmente desplegado y preparado para realizar los test cuando en el Desktop del usuario se crea el fichero YEARMONTHDAY_HOURMINSEC-init.log (apox 3.5 min)
 
-```
-$ terraforma destroy
-```
+![image](https://user-images.githubusercontent.com/753352/177376769-ac036719-c658-4886-8b2f-67c7c9fd20aa.png)
 
 - Ejecución Test
 
 ```
 $ cd /var/trak/back
 $ python3 manage.py test --noinput --failfast --nomigrations -v 2 -k [NOMBRE_TEST]
+```
+
+- Eliminación del proyecto, se debe de ejecutar cuando se ha finalizado los test para que se elimine la infraestructura
+
+```
+$ terraforma destroy
 ```
 
 ## Collaboration

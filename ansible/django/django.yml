@@ -102,6 +102,7 @@
       dest: "/{{ path }}/{{ project }}/{{ app }}"
       #single_branch: yes
       version: "{{ GIT_BRANCH }}"
+      force: yes
 
   - name: chown path repo
     file:

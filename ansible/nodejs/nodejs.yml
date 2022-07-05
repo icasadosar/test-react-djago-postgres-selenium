@@ -115,6 +115,7 @@
       #single_branch: yes
       version: "{{ GIT_BRANCH }}"
       #accept_hostkey: yes
+      force: yes
       
   - name: install nodejs packages on packages.json
     npm:

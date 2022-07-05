@@ -1,7 +1,80 @@
-# CI
+## Table of Contents
+1. [General Info](#general-info)
+2. [Technologies](#technologies)
+3. [Installation](#installation)
+4. [Execution](#execution)
+4. [Collaboration](#collaboration)
+5. [FAQs](#faqs)
+### General Info
+***
+Despliegue entorno CI
 
-## Requirements
+El entorno esta destinado a ser instaklado y ejecutado en sistemas Linux y derivados (MacOS, WSL)
 
+## Technologies
+***
+A list of technologies used within the project:
+* [Terraform](https://www.terraform.io/): Version 1.2.3
+* [Ansible](https://www.ansible.com/): Version 2.9.23
 
+## Installation
+***
+Para el despligue del entorno solo es necesario instalar en el equipo local Terraform, ya que el resto de software se instala en el proceso de despliegue.
 
-## Install
+Pero puede ser interesante instalar Ansible para realizar pruebas sobre el equipo local.
+
+### WSL
+*En caso de sistemas Windows es necesario instalar* 
+[Instalación Windows Subsystem Linux - WSL](https://docs.microsoft.com/en-us/windows/wsl/install)
+
+### Terraform
+
+[Instalación Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+
+### Ansible
+
+[Instalación Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html#installing-and-upgrading-ansible)
+
+## Execution
+
+```
+$ git clone https://github.com/icasadosar/prueba01
+$ cd ./terraform
+```
+
+Modificar la variable *my-public-ip* en el fichero *./variables.tf* por la la ip publica de tu conexión https://ifconfig.io/ip
+
+![image](https://user-images.githubusercontent.com/753352/177284779-b4e2eb63-4793-4aa3-a66b-d8034bcc69fe.png)
+
+Iniciar proyecto e instalación de Plugins
+
+```
+$ terraform init
+```
+Revisar plan de ejecución de Terraform
+
+```
+$ terraform plan
+```
+
+Aplicación del plan de ejecución, en este momento es donde se crea la infraestructura
+
+```
+$ terraform apply
+```
+
+Cuando finaliza la aplicación del proyecto, se mostraran las cadenas de conexión:
+
+![image](https://user-images.githubusercontent.com/753352/177284147-16a051a1-72a3-4615-a2f7-663f485196d3.png)
+
+Eliminación del proyecto, se debe de ejecutar cuando se ha finalizado los test para que se elimine la infraestructura
+
+```
+$ terraforma destroy
+```
+
+## Collaboration
+***
+
+## FAQs
+***

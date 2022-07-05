@@ -166,7 +166,7 @@
   - name: copy console log to desktop
     template:
         src: /var/log/cloud-init-output.log
-        dest: /home/ec2-user/Desktop/{{ ansible_date_time.date }}_{{ ansible_date_time.time }}-init.log
+        dest: /home/ec2-user/Desktop/{{ ansible_date_time.year }}{{ ansible_date_time.month }}{{ ansible_date_time.day }}_{{ ansible_date_time.hour }}{{ ansible_date_time.minute }}{{ ansible_date_time.second }}-init.log
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         mode: '0644'

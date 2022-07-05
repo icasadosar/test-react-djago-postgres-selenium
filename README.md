@@ -35,7 +35,7 @@ AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 Default region name [None]: 
 Default output format [None]: 
 ```
-[Quick Setup](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html)
+Ref: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html
 
 ### Crear SSH KEY
 
@@ -70,38 +70,38 @@ $ git clone https://github.com/icasadosar/prueba01
 $ cd ./terraform
 ```
 
-Modificar la variable *my-public-ip* en el fichero *./variables.tf* por la la ip publica de tu conexión https://ifconfig.io/ip
+- Modificar la variable *my-public-ip* en el fichero *./variables.tf* por la la ip publica de tu conexión https://ifconfig.io/ip
 
 ![image](https://user-images.githubusercontent.com/753352/177284779-b4e2eb63-4793-4aa3-a66b-d8034bcc69fe.png)
 
-Iniciar proyecto e instalación de Plugins
+- Iniciar proyecto e instalación de Plugins
 
 ```
 $ terraform init
 ```
-Revisar plan de ejecución de Terraform
+- Revisar plan de ejecución
 
 ```
 $ terraform plan
 ```
 
-Aplicación del plan de ejecución, en este momento es donde se crea la infraestructura
+- Aplicación del plan de ejecución, en este momento es donde se crea la infraestructura
 
 ```
 $ terraform apply
 ```
 
-Cuando finaliza la aplicación del proyecto, se mostraran las cadenas de conexión:
+- Cuando finaliza la aplicación del proyecto, se mostraran las cadenas de conexión:
 
-![image](https://user-images.githubusercontent.com/753352/177284147-16a051a1-72a3-4615-a2f7-663f485196d3.png)
+![image](https://user-images.githubusercontent.com/753352/177371449-4729b63a-6c4b-412d-aa61-06b6cce48ff7.png)
 
-Eliminación del proyecto, se debe de ejecutar cuando se ha finalizado los test para que se elimine la infraestructura
+- Eliminación del proyecto, se debe de ejecutar cuando se ha finalizado los test para que se elimine la infraestructura
 
 ```
 $ terraforma destroy
 ```
 
-Ejecución Test
+- Ejecución Test
 
 ```
 $ cd /var/trak/back

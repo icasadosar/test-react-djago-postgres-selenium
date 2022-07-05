@@ -193,7 +193,7 @@
     - name: restart supervisord
       service: 
         name: supervisord
-        state: restart
+        state: restarted
         enabled: yes
 
 #    - name: restart nodejs

@@ -93,7 +93,7 @@ $ terraform apply
 
 Cuando finaliza la aplicación del proyecto, se mostraran las cadenas de conexión:
 
-![image](https://user-images.githubusercontent.com/753352/177284147-16a051a1-72a3-4615-a2f7-663f485196d3.png)
+![image](https://user-images.githubusercontent.com/753352/177371449-4729b63a-6c4b-412d-aa61-06b6cce48ff7.png)
 
 Eliminación del proyecto, se debe de ejecutar cuando se ha finalizado los test para que se elimine la infraestructura
 

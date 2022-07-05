@@ -24,8 +24,9 @@ variable "cidr" { default = "10.0.0.0/16" }
 variable "subnet" { default = "10.0.1.0/24"}
 variable "aws_region" { default = "eu-west-1" }
 variable "ec2_instance" { default = "t3.large" }
-variable "ec2_ami" { default = "ami-033657df95dbf281a" }
+variable "ec2_ami" { default = "ami-0c454ba4ed5ef1f2d" }
   #ami = "ami-0d71ea30463e0ff8d" # Amazon Linux
-  #ami = "ami-0f68759fb5f855c36" # Trak Amazon Linux Desktop Test
+  #ami = "ami-033657df95dbf281a" # Amazon Linux Desktop
+  #ami = "ami-0c454ba4ed5ef1f2d" # AMI Trak Amazon Linux Desktop Test
 ##############################################################
 #

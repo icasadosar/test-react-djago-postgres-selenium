@@ -177,7 +177,7 @@ resource "aws_route_table_association" "subnet-association" {
 
 resource "aws_key_pair" "spot_key" {
   key_name   = "spot_key"
-  public_key = "${file("/home/ics/.ssh/id_rsa.pub")}"
+  public_key = "${file("~/.ssh/id_rsa.pub")}"
 }
 /*
 resource "aws_network_interface" "eth-test" {

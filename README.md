@@ -1,10 +1,11 @@
 ## Table of Contents
 1. [General Info](#general-info)
 2. [Technologies](#technologies)
-3. [Installation](#installation)
-4. [Execution](#execution)
-4. [Collaboration](#collaboration)
-5. [FAQs](#faqs)
+3. [Requirements](#requeriments)
+4. [Installation](#installation)
+5. [Execution](#execution)
+6. [Collaboration](#collaboration)
+7. [FAQs](#faqs)
 ### General Info
 ***
 Despliegue entorno CI
@@ -18,25 +19,41 @@ A list of technologies used within the project:
 * [Ansible](https://www.ansible.com/): Version 2.9.23
 * [AWS Cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
-## Installation
-***
-Para el despligue del entorno solo es necesario instalar en el equipo local Terraform, ya que el resto de software se instala en el proceso de despliegue.
-
-Pero puede ser interesante instalar Ansible para realizar pruebas sobre el equipo local.
+## Requeriments
 
 ### WSL
 *En caso de sistemas Windows es necesario instalar* 
 [Instalación Windows Subsystem Linux - WSL](https://docs.microsoft.com/en-us/windows/wsl/install)
 
 ### Configuración creadenciales AWS
+*** Solicitar Credenciales ***
+
 ```
 $ aws configure
 AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
 AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
-Default region name [None]: us-west-2
-Default output format [None]: json
+Default region name [None]: 
+Default output format [None]: 
 ```
 [Quick Setup](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html)
+
+### Crear SSH KEY
+
+```
+$ ssh-keygen -t rsa
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/youruser/.ssh/id_rsa): [ENTER]
+Enter passphrase (empty for no passphrase): [ENTER]
+Enter same passphrase again: [ENTER]
+Your identification has been saved in id_rsa.
+Your public key has been saved in id_rsa.pub.
+```
+
+## Installation
+***
+Para el despligue del entorno solo es necesario instalar en el equipo local Terraform, ya que el resto de software se instala en el proceso de despliegue.
+
+Pero puede ser interesante instalar Ansible para realizar pruebas sobre el equipo local.
 
 ### Terraform
 

@@ -16,6 +16,7 @@ El entorno esta destinado a ser instaklado y ejecutado en sistemas Linux y deriv
 A list of technologies used within the project:
 * [Terraform](https://www.terraform.io/): Version 1.2.3
 * [Ansible](https://www.ansible.com/): Version 2.9.23
+* [AWS Cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
 ## Installation
 ***
@@ -26,6 +27,16 @@ Pero puede ser interesante instalar Ansible para realizar pruebas sobre el equip
 ### WSL
 *En caso de sistemas Windows es necesario instalar* 
 [Instalación Windows Subsystem Linux - WSL](https://docs.microsoft.com/en-us/windows/wsl/install)
+
+### Configuración creadenciales AWS
+```
+$ aws configure
+AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
+AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+Default region name [None]: us-west-2
+Default output format [None]: json
+```
+[Quick Setup](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html)
 
 ### Terraform
 

@@ -137,6 +137,9 @@
       name: supervisor
       state: present
 
+  - name: enable boot service supervisord
+    shell: systemctl enable supervisord
+
   - name: copy supervisord supervisord-npm.ini
     template:
         src: supervisord-npm.ini

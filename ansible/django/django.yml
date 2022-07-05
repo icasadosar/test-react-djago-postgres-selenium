@@ -14,7 +14,7 @@
     #branch: CI
     pathlog: /var/log/trak
     GIT_AUTH_USER: icasadosar
-    GIT_AUTH_PASS: "{{ lookup('env','GIT_PASS') }}"
+    GIT_AUTH_PASS: "{{ lookup('env','GIT_AUTH_PASS') }}"
     GIT_DOMAIN: github.com
     GIT_USER: traksl
     GIT_REPO: trakBack

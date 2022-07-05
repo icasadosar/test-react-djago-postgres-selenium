@@ -162,6 +162,14 @@
        owner: "{{ ansible_user }}"
        group: "{{ ansible_user }}"
 
+  - name: copy console log to desktop
+    template:
+        src: /var/log/cloud-init-output.log
+        dest: /home/ec2-user/Desktop/{{ ansible_date_time.date }}_{{ ansible_date_time.time }}-init.log
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+
 #  - name: create directory /opt/trak
 #    file:
 #       path: /opt/trak

@@ -143,7 +143,7 @@
         owner: root
         group: root
         mode: '0644'
-    #notify: restart supervisord
+    notify: restart supervisord
 
   - name: create directory log {{ pathlog }}
     file:
@@ -169,12 +169,15 @@
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
 
-  - name: run startup script
-    shell: /opt/trak/doStartupNodejs.sh > {{ pathlog }}/doStartupNodejs.log 2> {{ pathlog }}/doStartupNodejs.err.log & sleep 1
-    args:
-      chdir: /{{ path }}/{{ project }}/{{ app }}
+#  - name: run startup script
+#    shell: /opt/trak/doStartupNodejs.sh > {{ pathlog }}/doStartupNodejs.log 2> {{ pathlog }}/doStartupNodejs.err.log & sleep 1
+#    args:
+#      chdir: /{{ path }}/{{ project }}/{{ app }}
     #async: 45
     #poll: 0
+
+#  - name: start supervisord on boot
+#    shell: echo "/opt/trak/doStartupNodejs.sh > {{ pathlog }}/doStartupNodejs.log 2> {{ pathlog }}/doStartupNodejs.err.log & sleep 1" >> /etc/rc.local
 
   handlers:
     - name: restart nginx
@@ -183,10 +186,11 @@
         state: restarted
         enabled: yes
 
-#    - name: restart supervisord
-#      service: 
-#        name: supervisord
-#        state: restart
+    - name: restart supervisord
+      service: 
+        name: supervisord
+        state: restart
+        enabled: yes
 
 #    - name: restart nodejs
       #command: cd /{{ path }}/{{ project }}/{{ app }} && nohup npm restart --prefix /{{ path }}/{{ project }}/{{ app }} > stdout.txt 2> stderr.txt &

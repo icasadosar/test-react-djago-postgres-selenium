@@ -17,7 +17,7 @@ El entorno esta destinado a ser instaklado y ejecutado en sistemas Linux y deriv
 A list of technologies used within the project:
 * [Terraform](https://www.terraform.io/): Version 1.2.3
 * [Ansible](https://www.ansible.com/): Version 2.9.23
-* [AWS Cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
+* [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html)
 
 ## Requeriments
 
@@ -99,6 +99,13 @@ Eliminación del proyecto, se debe de ejecutar cuando se ha finalizado los test 
 
 ```
 $ terraforma destroy
+```
+
+Ejecución Test
+
+```
+$ cd /var/trak/back
+$ python3 manage.py test --noinput --failfast --nomigrations -v 2 -k [NOMBRE_TEST]
 ```
 
 ## Collaboration

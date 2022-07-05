@@ -1,7 +1,7 @@
 ##############################################################
 #
 # MODIFY
-variable "my-public-ip" { default = "83.58.218.223" } # http://ifcondig.io/ip
+variable "my-public-ip" { default = "83.58.218.223" } # http://ifconfig.io/ip
 variable "GIT_BRANCH"   { default = "CI" }
 #
 ##############################################################

@@ -411,7 +411,7 @@ output "WINDOWS-rdp_connection" {
 }
 
 output "WINDOWS-UtralVNC-vnc_connection" {
-  value = "%programfiles%\uvnc bvba\UltraVNC\vncviewer.exe -autoreconnect 30 -fullscreen -connect ${aws_eip.ip-test-env.public_ip}:5901 -password ${local.pass_rdp}"
+  value = "cmd /k cd %programfiles%\uvnc bvba\UltraVNC & vncviewer.exe -autoreconnect 30 -fullscreen -connect ${aws_eip.ip-test-env.public_ip}:5901 -password ${local.pass_rdp}"
 }
 
 #output "example" {

@@ -189,6 +189,16 @@ resource "aws_network_interface" "eth-test" {
 }
 */
 
+data "aws_secretsmanager_secret_version" "GIT_DEVOPS_AUTH_PASS" {
+  secret_id     = "arn:aws:secretsmanager:eu-west-1:522192775665:secret:GIT_DEVOPS_PASS-XXXXXX"
+  #sensitive     = "true" 
+  #secret_string = aws_secretsmanager_secret_version.key-github.secret_string
+}
+
+locals {
+  GIT_DEVOPS_AUTH_PASS = jsondecode(nonsensitive(data.aws_secretsmanager_secret_version.GIT_DEVOPS_AUTH_PASS.secret_string))["GIT_DEVOPS_AUTH_PASS"]
+}
+
 data "aws_secretsmanager_secret_version" "GIT_PASS" {
   secret_id     = "arn:aws:secretsmanager:eu-west-1:522192775665:secret:testapp/git/pass-QfhnRl"
   #sensitive     = "true" 
@@ -288,19 +298,23 @@ resource "aws_spot_instance_request" "test_worker" {
         yum update
         yum install git -y
         #####sudo yum install jq -y
-        echo "export GIT_PASS=${local.GIT_AUTH_PASS}" >> /tmp/.env-var-git.sh
+        echo "export GIT_AUTH_USER=${var.GIT_AUTH_USER}" >> /tmp/.env-var-git.sh
+        echo "export GIT_AUTH_PASS=${local.GIT_AUTH_PASS}" >> /tmp/.env-var-git.sh
+        echo "export GIT_SITE=${var.GIT_SITE}" >> /tmp/.env-var-git.sh
+        echo "export GIT_REPO_FRONT=${var.GIT_REPO_FRONT}" >> /tmp/.env-var-git.sh
+        echo "export GIT_REPO_BACK=${var.GIT_REPO_BACK}" >> /tmp/.env-var-git.sh
+        echo "export GIT_BRANCH=${var.GIT_BRANCH}" >> /tmp/.env-var-git.sh
         echo "export PASS_DB=${local.PASS_DB}" >> /tmp/.env-var.sh
         echo "export USER_DB=${local.USER_DB}" >> /tmp/.env-var.sh
         echo "export NAME_DB=${local.NAME_DB}" >> /tmp/.env-var.sh
         echo "export HOST_DB=${local.HOST_DB}" >> /tmp/.env-var.sh
         echo "export PORT_DB=${local.PORT_DB}" >> /tmp/.env-var.sh
-        echo "export GIT_BRANCH=${var.GIT_BRANCH}" >> /tmp/.env-var.sh
         source /tmp/.env-var.sh
         source /tmp/.env-var-git.sh
         cat /tmp/.env-var.sh >> /home/ec2-user/.bash_profile
         #rm /tmp/.env-var.sh
         #rm /tmp/.env-var-git.sh
-        git clone https://${var.GIT_AUTH_USER}:${local.GIT_AUTH_PASS}@github.com/${var.GIT_SITE}/${var.GIT_REPO} /tmp/ansible_playbooks
+        git clone --branch ${GIT_DEVOPS_BRANCH} https://${var.GIT_DEVOPS_AUTH_USER}:${local.GIT_DEVOPS_AUTH_PASS}@github.com/${var.GIT_DEVOPS_SITE}/${var.GIT_DEVOPS_REPO} /tmp/ansible_playbooks
         chown ec2-user:ec2-user -R /tmp/ansible_playbooks/*
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx/nginx.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nodejs/nodejs.yml

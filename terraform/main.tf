@@ -314,7 +314,7 @@ resource "aws_spot_instance_request" "test_worker" {
         cat /tmp/.env-var.sh >> /home/ec2-user/.bash_profile
         #rm /tmp/.env-var.sh
         #rm /tmp/.env-var-git.sh
-        git clone --branch ${GIT_DEVOPS_BRANCH} https://${var.GIT_DEVOPS_AUTH_USER}:${local.GIT_DEVOPS_AUTH_PASS}@github.com/${var.GIT_DEVOPS_SITE}/${var.GIT_DEVOPS_REPO} /tmp/ansible_playbooks
+        git clone --branch ${var.GIT_DEVOPS_BRANCH} https://${var.GIT_DEVOPS_AUTH_USER}:${local.GIT_DEVOPS_AUTH_PASS}@github.com/${var.GIT_DEVOPS_SITE}/${var.GIT_DEVOPS_REPO} /tmp/ansible_playbooks
         chown ec2-user:ec2-user -R /tmp/ansible_playbooks/*
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx/nginx.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nodejs/nodejs.yml

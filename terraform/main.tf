@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "eu-west-1"
+  region = "${var.aws_region}"
 
   default_tags {
     tags = {
@@ -126,8 +126,8 @@ resource "aws_security_group" "ingress-vnc-test" {
       "${var.my-public-ip}/32"
     ]
 
-    from_port = 5091
-    to_port   = 5091
+    from_port = 5901
+    to_port   = 5901
     protocol  = "tcp"
   }
 
@@ -318,8 +318,8 @@ resource "aws_spot_instance_request" "test_worker" {
         chown ec2-user:ec2-user -R /tmp/ansible_playbooks/*
         ansible-playbook /tmp/ansible_playbooks/ansible/nginx/nginx.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/nodejs/nodejs.yml
-        ansible-playbook /tmp/ansible_playbooks/ansible/django/django.yml
         ansible-playbook /tmp/ansible_playbooks/ansible/postgresql/postgresql.yml
+        ansible-playbook /tmp/ansible_playbooks/ansible/django/django.yml
         echo "** end: terraform `date +%c` **" >> /var/log/trak/terraform.log 2>&1
   EOF
 
@@ -406,8 +406,12 @@ output "ssh_connection" {
 #  value = "http://${aws_eip.ip-test-env.public_ip}/index.html"
 #}
 
-output "rdp_connection" {
+output "WINDOWS-rdp_connection" {
   value = "cmd /k cmdkey /generic:TEMPSRV/${aws_eip.ip-test-env.public_ip} /user:ec2-user /pass:${local.pass_rdp} & mstsc /f /v:${aws_eip.ip-test-env.public_ip}"
+}
+
+output "WINDOWS-UtralVNC-vnc_connection" {
+  value = "%programfiles%\uvnc bvba\UltraVNC\vncviewer.exe -autoreconnect 30 -fullscreen -connect ${aws_eip.ip-test-env.public_ip}:5901 -password ${local.pass_rdp}"
 }
 
 #output "example" {

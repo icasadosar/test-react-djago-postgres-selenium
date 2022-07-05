@@ -35,7 +35,7 @@ AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
 Default region name [None]: 
 Default output format [None]: 
 ```
-[Quick Setup](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html)
+Ref: https://docs.aws.amazon.com/cli/latest/userguide/getting-started-quickstart.html
 
 ### Crear SSH KEY
 

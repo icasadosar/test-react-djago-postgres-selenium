@@ -289,7 +289,7 @@ resource "aws_spot_instance_request" "test_worker" {
 
   user_data = <<-EOF
         #!/bin/bash
-        rm /home/ec2-user/Desktop/*.log
+        rm -f /home/ec2-user/Desktop/*.log
         rm -rf /tmp/ansible_playbooks
         #####sudo chmod 600 /home/ec2-user/.ssh/ssh-key-github
         mkdir /var/log/trak/

@@ -1,11 +1,3 @@
-## Table of Contents
-1. [General Info](#general-info)
-2. [Technologies](#technologies)
-3. [Requirements](#requeriments)
-4. [Installation](#installation)
-5. [Execution](#execution)
-6. [Collaboration](#collaboration)
-7. [FAQs](#faqs)
 ### General Info
 ***
 Despliegue entorno CI

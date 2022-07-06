@@ -12,10 +12,10 @@ provider "aws" {
 
   default_tags {
     tags = {
-      environment = "test"
+      environment = "[ENVIRONMENT]"
       owner       = "devops"
-      com         = "trak"
-      project     = "apptest"
+      com         = "[COMPANY]"
+      project     = "[PROJECT]"
     }
   }
 }

@@ -13,8 +13,8 @@ variable "GIT_REPO_BACK" { default = "trakBack" }
 variable "GIT_AUTH_USER" { default = "icasadosar" }
 #
 # CONF GIT REPO DEVOPS
-variable "GIT_DEVOPS_SITE" { default = "icasadosar" }
-variable "GIT_DEVOPS_REPO" { default = "prueba01" }
+variable "GIT_DEVOPS_SITE" { default = "traksl" }
+variable "GIT_DEVOPS_REPO" { default = "devops" }
 variable "GIT_DEVOPS_BRANCH" { default = "master" }
 variable "GIT_DEVOPS_AUTH_USER" { default = "icasadosar" }
 #
